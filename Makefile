@@ -1,7 +1,7 @@
 all: utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o IMC-raw
 
-IMC-raw: IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o
-	g++ IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o -o IMC-raw.x 
+IMC-raw: IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o
+	g++ IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o -o IMC-raw.x 
 
 utils.o: utils.h utils.cpp global.h types.h
 	g++ -c utils.cpp -o utils.o
@@ -24,6 +24,9 @@ cha.o: cha.h cha.cpp global.h types.h
 mmio.o: mmio.h mmio.cpp global.h types.h
 	g++ -c mmio.cpp -o mmio.o
 
+iio.o: iio.h iio.cpp global.h types.h
+	g++ -c iio.cpp -o iio.o
+
 debug: $(wildcard *.h) $(wildcard *.cpp)
 	g++ -g -pg -o debug.x $(wildcard *.cpp)
 
@@ -38,5 +41,9 @@ run:
 cha:
 	./IMC-raw.x -e cha/config=0x00c001fe00010135,config1=0x20,name=UNC_CHA_TOR_INSERTS.IA_MISS:tid=0x20
 
+iio:
+	./IMC-raw.x -e iio/config=0x0000701000400183,name=UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART0
+
 run_debug:
-	./debug.x -e imc/config=0x000000000000f005,name=UNC_M_CAS_COUNT.WR -e imc/config=0x000000000000cf05,name=UNC_M_CAS_COUNT.RD  -e imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0 -d 1 -e cha/config=0x00c001fe00010135,config1=0x20,name=UNC_CHA_TOR_INSERTS.IA_MISS:tid=0x20
+	# ./debug.x -e imc/config=0x000000000000f005,name=UNC_M_CAS_COUNT.WR -e imc/config=0x000000000000cf05,name=UNC_M_CAS_COUNT.RD  -e imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0 -d 1 -e cha/config=0x00c001fe00010135,config1=0x20,name=UNC_CHA_TOR_INSERTS.IA_MISS:tid=0x20
+	./debug.x -e iio/config=0x0000701000400183,name=UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART0

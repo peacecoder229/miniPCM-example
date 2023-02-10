@@ -101,17 +101,6 @@ uint32 CHA::getMaxNumOfCBoxes() const
     return num;
 }
 
-int32 CHA::getNumCores() const
-{
-    static int num_cores = -1;
-    if(num_cores >= 0) return num_cores;
-
-    // Only works for linux systems
-    num_cores = sysconf(_SC_NPROCESSORS_ONLN);
-    
-    return num_cores;
-}
-
 bool CHA::program(std::string configStr)
 {
     if (eventCount == SERVER_UNCORE_COUNTER_MAX_CONTROLLERS)

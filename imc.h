@@ -21,6 +21,7 @@ class IMC{
 
     void initFreeze();
     void run();
+    void print();
 
   private:
     std::vector<std::pair<uint32, uint32>> socket2UBOX0bus;
@@ -32,6 +33,7 @@ class IMC{
     void initSocket2Ubox0Bus();
     std::vector<size_t> getServerMemBars(const uint32 numIMC,
         const uint32 root_segment_ubox0, const uint32 root_bus_ubox0);
+    std::vector<std::string> names;
 
 };   // class IMC
 

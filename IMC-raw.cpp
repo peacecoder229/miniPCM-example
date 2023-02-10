@@ -30,6 +30,7 @@
 
 #include "imc.h"
 #include "cha.h"
+#include "iio.h"
 #include "slidingwindow.h"
 
 #include <vector>
@@ -68,14 +69,17 @@ void print_usage(const string progname)
     cerr << "\n";
 }
 
-bool addEvent(string eventStr, pcm::IMC& imc, pcm::CHA& cha)
+bool addEvent(string eventStr, pcm::IMC& imc, pcm::CHA& cha, pcm::IIO& iio)
 {
 
     enum class pmuType {
         IMC,
-        CHA
+        CHA,
+        IIO
     };
-    const std::map<std::string, pmuType> pmuNameMap{{"imc", pmuType::IMC},{"cha", pmuType::CHA}};
+    const std::map<std::string, pmuType> pmuNameMap{{"imc", pmuType::IMC},
+                                                    {"cha", pmuType::CHA},
+                                                    {"iio", pmuType::IIO}};
 
     const auto typeConfig = pcm::split(eventStr, '/');
     if (typeConfig.size() < 2)
@@ -103,6 +107,9 @@ bool addEvent(string eventStr, pcm::IMC& imc, pcm::CHA& cha)
         case pmuType::CHA:
             cha.program(configStr);
             break;
+        case pmuType::IIO:
+            iio.program(configStr);
+            break;
         default:
             return false;
     }
@@ -117,7 +124,7 @@ int main(int argc, char* argv[])
 
     pcm::IMC imc;
     pcm::CHA cha;
-
+    pcm::IIO iio;
 
     cerr << "\n";
     cerr << " Processor Counter Monitor: Raw Event Monitoring Utility \n";
@@ -152,7 +159,7 @@ int main(int argc, char* argv[])
             argv++;
             argc--;
 
-            if (addEvent(*argv, imc, cha) == false)
+            if (addEvent(*argv, imc, cha, iio) == false)
             {
                 exit(EXIT_FAILURE);
             }
@@ -187,11 +194,11 @@ int main(int argc, char* argv[])
     std::vector<std::vector<pcm::uint64>> counter3, prev3;
     std::vector<std::vector<pcm::uint64>> counter4, prev4;
 
-    imc.getCounter(prev0, 0);
-    imc.getCounter(prev1, 1);
-    imc.getCounter(prev2, 2);
-    imc.getCounter(prev3, 3);
-    cha.getCounter(prev4, 0);
+    // imc.getCounter(prev0, 0);
+    // imc.getCounter(prev1, 1);
+    // imc.getCounter(prev2, 2);
+    // imc.getCounter(prev3, 3);
+    // cha.getCounter(prev4, 0);
 
     double write, read, wpq, rpq;
     double ddrcyclecount = 1e9 * (delay*60) / (1/2.4);
@@ -202,6 +209,9 @@ int main(int argc, char* argv[])
     // for(int aaa = 1; aaa < 10; aaa++){
 
         ::sleep(delay);
+
+        iio.print();
+        continue;
 
         imc.getCounter(counter0, 0);
         imc.getCounter(counter1, 1);

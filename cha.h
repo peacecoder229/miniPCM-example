@@ -18,7 +18,6 @@ class CHA{
 
   private:
     uint32 getMaxNumOfCBoxes() const;
-    int32 getNumCores() const;
     void initFreeze();
 
     int eventCount;

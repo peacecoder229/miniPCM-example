@@ -69,10 +69,14 @@ bool IMC::program(std::string configStr){
     uint32 event;
     for (auto item : configArray)
     {
-        std::string f;
-        if (match("config=(0[xX][0-9a-fA-F]+)", item, f)) {
-            event = strtoll(f.c_str(), NULL, 16);
+        std::string f0, f1;
+        if (match("config=(0[xX][0-9a-fA-F]+)", item, f0)) {
+            event = strtoll(f0.c_str(), NULL, 16);
             std::cout << "Config read" << event << "\n";	
+        }
+        else if (match("name=(.+)", item, f1)) {
+            names.push_back(f1);
+            std::cout << "Name read " << f1 << "\n";
         }
     }
 
@@ -222,6 +226,58 @@ std::vector<size_t> IMC::getServerMemBars(const uint32 numIMC, const uint32 root
         result.push_back(memBar);
     }
     return result;
+}
+
+void IMC::print()
+{
+    // static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
+    // if (M.empty()){
+    //     M.resize(eventCount);
+    //     for(int i = 0; i < eventCount; ++i){
+    //         M[i].resize(imcPMUs.size());
+    //             for(int j = 0; j < imcPMUs.size(); ++j){
+    //                 M[i][j].resize(imcPMUs[i].size());
+    //             }
+    //     }
+
+    //     for(int i = 0; i < imcPMUs.size(); ++i){
+    //         for(int j = 0; j < imcPMUs[i].size(); ++j){
+    //             imcPMUs[i][j].freeze();
+    //             for(int k = 0; k < eventCount; ++k){
+    //                 M[k][i][j] = *(imcPMUs[i][j].counterValue[k]);
+    //                 // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+    //             }
+    //             imcPMUs[i][j].unfreeze();
+    //         }
+    //     }
+
+    //     M_prev = M;
+    // }
+    
+    // for(int i = 0; i < imcPMUs.size(); ++i){
+    //     for(int j = 0; j < imcPMUs[i].size(); ++j){
+    //         imcPMUs[i][j].freeze();
+    //         for(int k = 0; k < eventCount; ++k){
+    //             M[k][i][j] = *(imcPMUs[i][j].counterValue[k]);
+    //   int32          // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+    //         }
+    //         imcPMUs[i][j].unfreeze();
+    //     }
+    // }
+
+    // printf("imc:\n");
+    // for(int soc = 0; soc < 2; soc++){
+    //     printf("  socket %d\n", soc);
+    //         for(int e = 0; e < eventCount; e++){
+    //             printf("   %d)", e+1);
+    //             std::cout << names[e] << " = " 
+    //                       << M[e][soc][stack] - M_prev[e][soc][stack]
+    //                       << std::endl;
+    //         }
+    //     }
+    // }
+
+    // M_prev = M;
 }
 
 
