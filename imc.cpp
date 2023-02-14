@@ -78,6 +78,9 @@ bool IMC::program(std::string configStr){
             names.push_back(f1);
             std::cout << "Name read " << f1 << "\n";
         }
+        else if (item == "fixed") {
+            enableFixed();
+        }
     }
 
     for (auto& imcPMUsPerSocket : imcPMUs)
@@ -157,6 +160,24 @@ void IMC::getCounter(std::vector<std::vector<uint64>>& M, int counterId)
             imcPMUs[i][j].freeze();
             M[i][j] = *(imcPMUs[i][j].counterValue[counterId]);
             // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+            imcPMUs[i][j].unfreeze();
+        }
+    }
+}
+
+void IMC::getFixed(std::vector<std::vector<uint64>>& M)
+{
+    if (M.size() != imcPMUs.size()) {
+        M.resize(imcPMUs.size());
+        for(int i = 0; i < imcPMUs.size(); ++i){
+            M[i].resize(imcPMUs[i].size());
+        }
+    }
+
+    for(int i = 0; i < imcPMUs.size(); ++i){
+        for(int j = 0; j < imcPMUs[i].size(); ++j){
+            imcPMUs[i][j].freeze();
+            M[i][j] = *(imcPMUs[i][j].fixedCounterValue);
             imcPMUs[i][j].unfreeze();
         }
     }

@@ -193,12 +193,14 @@ int main(int argc, char* argv[])
     std::vector<std::vector<pcm::uint64>> counter2, prev2;
     std::vector<std::vector<pcm::uint64>> counter3, prev3;
     std::vector<std::vector<pcm::uint64>> counter4, prev4;
+    std::vector<std::vector<pcm::uint64>> counterf, prevf;
 
     // imc.getCounter(prev0, 0);
     // imc.getCounter(prev1, 1);
     // imc.getCounter(prev2, 2);
     // imc.getCounter(prev3, 3);
     // cha.getCounter(prev4, 0);
+    imc.getFixed(prevf);
 
     double write, read, wpq, rpq;
     double ddrcyclecount = 1e9 * (delay*60) / (1/2.4);
@@ -210,7 +212,14 @@ int main(int argc, char* argv[])
 
         ::sleep(delay);
 
-        iio.print();
+        // iio.print();
+        imc.getFixed(counterf);
+        for(int i = 0; i < counterf.size(); i++){
+            for(int j = 0; j < counterf[i].size(); j++){
+                printf("imc.fixed[%d][%d] = %ld\n", i, j, counterf[i][j] - prevf[i][j]);
+            }
+        }
+        prevf = counterf;
         continue;
 
         imc.getCounter(counter0, 0);

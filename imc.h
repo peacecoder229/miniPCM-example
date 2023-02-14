@@ -15,6 +15,7 @@ class IMC{
     void enableFixed();
     void getDRAMClocks(std::vector<std::vector<uint64>>& M);
     void getCounter(std::vector<std::vector<uint64>>& M, int counterId);
+    void getFixed(std::vector<std::vector<uint64>>& M);
     void getDRAMReads(std::vector<uint64>& M);
     void getDRAMWrites(std::vector<uint64>& M);
     virtual ~IMC(){}
