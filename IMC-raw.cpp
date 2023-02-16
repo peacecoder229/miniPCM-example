@@ -117,6 +117,37 @@ bool addEvent(string eventStr, pcm::IMC& imc, pcm::CHA& cha, pcm::IIO& iio)
     return true;
 }
 
+void chaPost(pcm::CHA& cha)
+{
+    uint64_t io_wr, io_rd;
+    double IO_WR_BW, IO_RD_BW;
+
+    static std::vector<std::vector<pcm::uint64>> counter0, prev0;
+    static std::vector<std::vector<pcm::uint64>> counter1, prev1;
+    static std::vector<std::vector<pcm::uint64>> counter2, prev2;
+    static std::vector<std::vector<pcm::uint64>> counter3, prev3;
+
+    cha.getCounter(counter0, 0);
+    cha.getCounter(counter1, 0);
+    cha.getCounter(counter2, 0);
+    cha.getCounter(counter3, 0);
+
+    for(int i = 0; i < 2; i++){
+        io_wr = 0;
+        io_rd = 0;
+
+        for(int j = 0; j < counter0[i].size(); j++){
+            io_wr += counter0[i][j] - prev0[i][j];
+            io_rd  += counter1[i][j] - prev1[i][j];
+        }
+
+        printf("socket %d: ");
+        IO_WR_BW = io_wr * 64 / 1E9;
+        IO_RD_BW = io_rd * 64 / 1E9;
+        
+        printf("IO_WR_BW = %lf  IO_RD_BW = %lf\n", IO_WR_BW, IO_RD_BW);
+    }
+}
 
 int main(int argc, char* argv[])
 {
@@ -180,6 +211,7 @@ int main(int argc, char* argv[])
 
     imc.run();
     cha.run();
+    iio.run();
 
     if (delay <= 0.0) delay = PCM_DELAY_DEFAULT;
 
@@ -212,19 +244,11 @@ int main(int argc, char* argv[])
 
         ::sleep(delay);
 
+        // imc.print();
+        // cha.print();
         // iio.print();
-        // imc.getFixed(counterf);
-        // for(int i = 0; i < counterf.size(); i++){
-        //     for(int j = 0; j < counterf[i].size(); j++){
-        //         printf("imc.fixed[%d][%d] = %ld\n", i, j, counterf[i][j] - prevf[i][j]);
-        //     }
-        // }
-        // prevf = counterf;
         // iio.printFR();
-        imc.print();
-        cha.print();
-        iio.print();
-        iio.printFR();
+        chaPost(cha);
         continue;
 
         imc.getCounter(counter0, 0);
