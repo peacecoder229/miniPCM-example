@@ -71,4 +71,24 @@ void UncorePMU::resetUnfreeze()
         return;
 }
 
+FreeRunBWCounters::FreeRunBWCounters(const std::shared_ptr<SafeMsrHandle> & handle_, size_t offset_)
+{
+    BWIn[0] = std::make_shared<MSRRegister>(handle_, offset_);
+    BWIn[1] = std::make_shared<MSRRegister>(handle_, offset_+1);
+    BWIn[2] = std::make_shared<MSRRegister>(handle_, offset_+2);
+    BWIn[3] = std::make_shared<MSRRegister>(handle_, offset_+3);
+    BWIn[4] = std::make_shared<MSRRegister>(handle_, offset_+4);
+    BWIn[5] = std::make_shared<MSRRegister>(handle_, offset_+5);
+    BWIn[6] = std::make_shared<MSRRegister>(handle_, offset_+6);
+    BWIn[7] = std::make_shared<MSRRegister>(handle_, offset_+7);
+    BWOut[0] = std::make_shared<MSRRegister>(handle_, offset_+8);
+    BWOut[1] = std::make_shared<MSRRegister>(handle_, offset_+9);
+    BWOut[2] = std::make_shared<MSRRegister>(handle_, offset_+10);
+    BWOut[3] = std::make_shared<MSRRegister>(handle_, offset_+11);
+    BWOut[4] = std::make_shared<MSRRegister>(handle_, offset_+12);
+    BWOut[5] = std::make_shared<MSRRegister>(handle_, offset_+13);
+    BWOut[6] = std::make_shared<MSRRegister>(handle_, offset_+14);
+    BWOut[7] = std::make_shared<MSRRegister>(handle_, offset_+15);
+}
+
 }   // namespace pcm

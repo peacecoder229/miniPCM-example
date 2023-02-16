@@ -17,10 +17,16 @@ inline UncorePMU makeIIOPMU(std::shared_ptr<SafeMsrHandle>& handle, int unit)
                     std::make_shared<MSRRegister>(handle, SPR_M2IOSF_IIO_CTR0 + SPR_M2IOSF_REG_STEP * unit + 3));
 }
 
+inline FreeRunBWCounters makeIIOFRCtr(std::shared_ptr<SafeMsrHandle>& handle, int unit)
+{
+    return FreeRunBWCounters(handle, SPR_M2IOSF_IIO_FREE0 + SPR_M2IOSF_REG_STEP * unit);
+}
+
 IIO::IIO()
 {
     eventCount = 0;
     iioPMUs.resize(2);
+    iioFRCtrs.resize(2);
 
     for (uint32 s = 0; s < iioPMUs.size(); ++s)
     {
@@ -29,6 +35,7 @@ IIO::IIO()
         for (uint32 unit = 0; unit < SPR_M2IOSF_NUM; ++unit)
         {
             iioPMUs[s].push_back(makeIIOPMU(handle, unit));
+            iioFRCtrs[s].push_back(makeIIOFRCtr(handle, unit));
         }
     }
 
@@ -158,6 +165,67 @@ void IIO::print()
                           << M[e][soc][stack] - M_prev[e][soc][stack]
                           << std::endl;
             }
+        }
+    }
+
+    M_prev = M;
+}
+
+void IIO::printFR()
+{
+    static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
+    if (M.empty()){
+        M.resize(iioFRCtrs.size());
+        for(int i = 0; i < iioFRCtrs.size(); ++i){
+            M[i].resize(iioFRCtrs[i].size());
+            for(int j = 0; j < iioFRCtrs[i].size(); ++j){
+                M[i][j].resize(16);
+            }
+        }
+
+        for(int i = 0; i < iioFRCtrs.size(); ++i){
+            for(int j = 0; j < iioFRCtrs[i].size(); ++j){
+                for(int k = 0; k < 8; ++k){
+                    M[i][j][k] = *(iioFRCtrs[i][j].BWIn[k]);
+                    // printf("iioPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+                }
+                for(int k = 0; k < 8; ++k){
+                    M[i][j][k+8] = *(iioFRCtrs[i][j].BWOut[k]);
+                    // printf("iioPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+                }
+            }
+        }
+
+        M_prev = M;
+    }
+    
+    for(int i = 0; i < iioFRCtrs.size(); ++i){
+        for(int j = 0; j < iioFRCtrs[i].size(); ++j){
+            for(int k = 0; k < 8; ++k){
+                M[i][j][k] = *(iioFRCtrs[i][j].BWIn[k]);
+                // printf("iioPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+            }
+            for(int k = 0; k < 8; ++k){
+                M[i][j][k+8] = *(iioFRCtrs[i][j].BWOut[k]);
+                // printf("iioPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+            }
+        }
+    }
+
+    printf("iio:\n");
+    for(int soc = 0; soc < 2; soc++){
+        printf("  socket %d\n", soc);
+        for(int stack = 0; stack < SPR_M2IOSF_NUM; stack++){
+            printf("    M2IOSF %d\n", stack);
+            printf("     In:\n");
+            for(int i = 0; i < 8; i++){
+                std::cout << "     " << M[soc][stack][i] - M_prev[soc][stack][i] << "\t";
+            }
+            printf("\n     Out:\n");
+            for(int i = 0; i < 8; i++){
+                std::cout << "     " << M[soc][stack][i+8] - M_prev[soc][stack][i+8] << "\t";
+            }
+            std::cout << std::endl;
         }
     }
 

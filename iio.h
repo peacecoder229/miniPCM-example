@@ -16,12 +16,14 @@ class IIO{
     void run();
     void getCounter(std::vector<std::vector<uint64>>& M, int counterId);
     void print();
+    void printFR();
 
   private:
     void initFreeze();
 
     int eventCount;
     std::vector<std::vector<UncorePMU>> iioPMUs;
+    std::vector<std::vector<FreeRunBWCounters>> iioFRCtrs;
     std::vector<std::string> names;
 };
 

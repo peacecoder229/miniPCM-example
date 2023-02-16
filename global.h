@@ -63,6 +63,7 @@ constexpr auto SPR_CHA_MSR_STEP             = 0x10;
 constexpr auto SPR_M2IOSF_IIO_UNIT_CTL      = 0x3000;
 constexpr auto SPR_M2IOSF_IIO_CTR0          = 0x3008;
 constexpr auto SPR_M2IOSF_IIO_CTL0          = 0x3002;
+constexpr auto SPR_M2IOSF_IIO_FREE0         = 0x3800;
 constexpr auto SPR_M2IOSF_REG_STEP          = 0x10;
 constexpr auto SPR_M2IOSF_NUM               = 12;
 

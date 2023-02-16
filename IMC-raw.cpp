@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
     // imc.getCounter(prev2, 2);
     // imc.getCounter(prev3, 3);
     // cha.getCounter(prev4, 0);
-    imc.getFixed(prevf);
+    // imc.getFixed(prevf);
 
     double write, read, wpq, rpq;
     double ddrcyclecount = 1e9 * (delay*60) / (1/2.4);
@@ -213,13 +213,14 @@ int main(int argc, char* argv[])
         ::sleep(delay);
 
         // iio.print();
-        imc.getFixed(counterf);
-        for(int i = 0; i < counterf.size(); i++){
-            for(int j = 0; j < counterf[i].size(); j++){
-                printf("imc.fixed[%d][%d] = %ld\n", i, j, counterf[i][j] - prevf[i][j]);
-            }
-        }
-        prevf = counterf;
+        // imc.getFixed(counterf);
+        // for(int i = 0; i < counterf.size(); i++){
+        //     for(int j = 0; j < counterf[i].size(); j++){
+        //         printf("imc.fixed[%d][%d] = %ld\n", i, j, counterf[i][j] - prevf[i][j]);
+        //     }
+        // }
+        // prevf = counterf;
+        iio.printFR();
         continue;
 
         imc.getCounter(counter0, 0);
