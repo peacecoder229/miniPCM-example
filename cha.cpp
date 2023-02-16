@@ -115,7 +115,7 @@ bool CHA::program(std::string configStr)
     uint32 filter0 = -1;
     for (auto item : configArray)
     {
-        std::string f0, f1;
+        std::string f0, f1, f2;
         if (match("config=(0[xX][0-9a-fA-F]+)", item, f0)) {
             event = strtoll(f0.c_str(), NULL, 16);
             std::cout << "Config read " << std::hex << event << "\n";
@@ -123,6 +123,10 @@ bool CHA::program(std::string configStr)
         else if (match("config1=(0[xX][0-9a-fA-F]+)", item, f1)) {
             filter0 = strtol(f1.c_str(), NULL, 16);
             std::cout  << "Config1 read " << std::hex << filter0 << "\n";
+        }
+        else if (match("name=(.+)", item, f2)) {
+            names.push_back(f2);
+            std::cout << "Name read " << f2 << "\n";
         }
     }
 
@@ -185,5 +189,64 @@ void CHA::getCounter(std::vector<std::vector<uint64>>& M, int counterId)
     }
 }
 
+void CHA::print()
+{
+    static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
+    uint64 result, prev;
+    double ddrcyclecount = 1e9 *60 / (1/2.4);
+
+    if (M.empty()){
+        M.resize(eventCount);
+        for(int i = 0; i < eventCount; ++i){
+            M[i].resize(cboPMUs.size());
+                for(int j = 0; j < cboPMUs.size(); ++j){
+                    M[i][j].resize(cboPMUs[j].size());
+                }
+        }
+
+        for(int i = 0; i < cboPMUs.size(); ++i){
+            for(int j = 0; j < cboPMUs[i].size(); ++j){
+                cboPMUs[i][j].freeze();
+                for(int k = 0; k < eventCount; ++k){
+                    M[k][i][j] = *(cboPMUs[i][j].counterValue[k]);
+                    // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, cboPMUs[i][j].counterValue[counterId], M[i][j]);
+                }
+                cboPMUs[i][j].unfreeze();
+            }
+        }
+
+        M_prev = M;
+    }
+    
+    for(int i = 0; i < cboPMUs.size(); ++i){
+        for(int j = 0; j < cboPMUs[i].size(); ++j){
+            cboPMUs[i][j].freeze();
+            for(int k = 0; k < eventCount; ++k){
+                M[k][i][j] = *(cboPMUs[i][j].counterValue[k]);
+                // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, cboPMUs[i][j].counterValue[counterId], M[i][j]);
+            }
+            cboPMUs[i][j].unfreeze();
+        }
+    }
+
+    printf("imc:\n");
+    for(int soc = 0; soc < 2; soc++){
+        printf("  socket %d\n", soc);
+            for(int e = 0; e < eventCount; e++){
+                printf("   %d)", e+1);
+                result = 0;
+                prev = 0;
+                for(int i = 0; i < M[e][soc].size(); i++){
+                    result += M[e][soc][i];
+                    prev += M_prev[e][soc][i];
+                }
+                std::cout << names[e] << " = " 
+                          << std::dec << (result - prev) / ddrcyclecount
+                          << std::endl;
+            }
+    }
+
+    M_prev = M;
+}
 
 }   // namespace pcm

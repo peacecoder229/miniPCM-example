@@ -220,6 +220,10 @@ int main(int argc, char* argv[])
         //     }
         // }
         // prevf = counterf;
+        // iio.printFR();
+        imc.print();
+        cha.print();
+        iio.print();
         iio.printFR();
         continue;
 

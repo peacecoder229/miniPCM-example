@@ -15,6 +15,7 @@ class CHA{
     bool program(std::string configStr);
     void run();
     void getCounter(std::vector<std::vector<uint64>>& M, int counterId);
+    void print();
 
   private:
     uint32 getMaxNumOfCBoxes() const;
@@ -22,6 +23,8 @@ class CHA{
 
     int eventCount;
     std::vector<std::vector<UncorePMU>> cboPMUs;
+    std::vector<std::string> names;
+
 };
 
 inline auto CX_MSR_PMON_BOX_FILTER(uint32 Cbo)

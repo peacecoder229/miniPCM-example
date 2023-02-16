@@ -251,54 +251,62 @@ std::vector<size_t> IMC::getServerMemBars(const uint32 numIMC, const uint32 root
 
 void IMC::print()
 {
-    // static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
-    // if (M.empty()){
-    //     M.resize(eventCount);
-    //     for(int i = 0; i < eventCount; ++i){
-    //         M[i].resize(imcPMUs.size());
-    //             for(int j = 0; j < imcPMUs.size(); ++j){
-    //                 M[i][j].resize(imcPMUs[i].size());
-    //             }
-    //     }
+    static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
+    uint64 result, prev;
+    double ddrcyclecount = 1e9 *60 / (1/2.4);
 
-    //     for(int i = 0; i < imcPMUs.size(); ++i){
-    //         for(int j = 0; j < imcPMUs[i].size(); ++j){
-    //             imcPMUs[i][j].freeze();
-    //             for(int k = 0; k < eventCount; ++k){
-    //                 M[k][i][j] = *(imcPMUs[i][j].counterValue[k]);
-    //                 // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
-    //             }
-    //             imcPMUs[i][j].unfreeze();
-    //         }
-    //     }
+    if (M.empty()){
+        M.resize(eventCount);
+        for(int i = 0; i < eventCount; ++i){
+            M[i].resize(imcPMUs.size());
+                for(int j = 0; j < imcPMUs.size(); ++j){
+                    M[i][j].resize(imcPMUs[j].size());
+                }
+        }
 
-    //     M_prev = M;
-    // }
+        for(int i = 0; i < imcPMUs.size(); ++i){
+            for(int j = 0; j < imcPMUs[i].size(); ++j){
+                imcPMUs[i][j].freeze();
+                for(int k = 0; k < eventCount; ++k){
+                    M[k][i][j] = *(imcPMUs[i][j].counterValue[k]);
+                    // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+                }
+                imcPMUs[i][j].unfreeze();
+            }
+        }
+
+        M_prev = M;
+    }
     
-    // for(int i = 0; i < imcPMUs.size(); ++i){
-    //     for(int j = 0; j < imcPMUs[i].size(); ++j){
-    //         imcPMUs[i][j].freeze();
-    //         for(int k = 0; k < eventCount; ++k){
-    //             M[k][i][j] = *(imcPMUs[i][j].counterValue[k]);
-    //   int32          // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
-    //         }
-    //         imcPMUs[i][j].unfreeze();
-    //     }
-    // }
+    for(int i = 0; i < imcPMUs.size(); ++i){
+        for(int j = 0; j < imcPMUs[i].size(); ++j){
+            imcPMUs[i][j].freeze();
+            for(int k = 0; k < eventCount; ++k){
+                M[k][i][j] = *(imcPMUs[i][j].counterValue[k]);
+                // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+            }
+            imcPMUs[i][j].unfreeze();
+        }
+    }
 
-    // printf("imc:\n");
-    // for(int soc = 0; soc < 2; soc++){
-    //     printf("  socket %d\n", soc);
-    //         for(int e = 0; e < eventCount; e++){
-    //             printf("   %d)", e+1);
-    //             std::cout << names[e] << " = " 
-    //                       << M[e][soc][stack] - M_prev[e][soc][stack]
-    //                       << std::endl;
-    //         }
-    //     }
-    // }
+    printf("imc:\n");
+    for(int soc = 0; soc < 2; soc++){
+        printf("  socket %d\n", soc);
+            for(int e = 0; e < eventCount; e++){
+                printf("   %d)", e+1);
+                result = 0;
+                prev = 0;
+                for(int i = 0; i < M[e][soc].size(); i++){
+                    result += M[e][soc][i];
+                    prev += M_prev[e][soc][i];
+                }
+                std::cout << names[e] << " = " 
+                          << std::dec << (result - prev) / ddrcyclecount
+                          << std::endl;
+            }
+    }
 
-    // M_prev = M;
+    M_prev = M;
 }
 
 
