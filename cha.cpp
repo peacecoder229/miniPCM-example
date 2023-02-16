@@ -193,7 +193,7 @@ void CHA::print()
 {
     static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
     uint64 result, prev;
-    double ddrcyclecount = 1e9 *60 / (1/2.4);
+    // double ddrcyclecount = 1e9 *60 / (1/2.4);
 
     if(eventCount == 0) return;
     if (M.empty()){
@@ -242,7 +242,7 @@ void CHA::print()
                     prev += M_prev[e][soc][i];
                 }
                 std::cout << names[e] << " = " 
-                          << std::dec << (result - prev) / ddrcyclecount
+                          << std::dec << (result - prev)
                           << std::endl;
             }
     }
