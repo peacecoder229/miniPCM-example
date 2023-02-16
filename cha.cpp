@@ -195,6 +195,7 @@ void CHA::print()
     uint64 result, prev;
     double ddrcyclecount = 1e9 *60 / (1/2.4);
 
+    if(eventCount == 0) return;
     if (M.empty()){
         M.resize(eventCount);
         for(int i = 0; i < eventCount; ++i){
@@ -229,7 +230,7 @@ void CHA::print()
         }
     }
 
-    printf("imc:\n");
+    printf("cha:\n");
     for(int soc = 0; soc < 2; soc++){
         printf("  socket %d\n", soc);
             for(int e = 0; e < eventCount; e++){

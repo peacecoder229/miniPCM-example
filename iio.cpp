@@ -119,6 +119,8 @@ void IIO::getCounter(std::vector<std::vector<uint64>>& M, int counterId)
 
 void IIO::print()
 {
+    if(eventCount == 0) return;
+
     static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
     if (M.empty()){
         M.resize(eventCount);
@@ -173,6 +175,8 @@ void IIO::print()
 
 void IIO::printFR()
 {
+    if(eventCount == 0) return;
+
     static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
     if (M.empty()){
         M.resize(iioFRCtrs.size());

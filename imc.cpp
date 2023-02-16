@@ -255,6 +255,8 @@ void IMC::print()
     uint64 result, prev;
     double ddrcyclecount = 1e9 *60 / (1/2.4);
 
+    if(eventCount == 0) return;
+
     if (M.empty()){
         M.resize(eventCount);
         for(int i = 0; i < eventCount; ++i){
