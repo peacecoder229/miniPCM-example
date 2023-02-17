@@ -127,6 +127,13 @@ void chaPost(pcm::CHA& cha)
     static std::vector<std::vector<pcm::uint64>> counter2, prev2;
     static std::vector<std::vector<pcm::uint64>> counter3, prev3;
 
+    if (prev0.empty()) {
+    	cha.getCounter(prev0, 0);
+    	cha.getCounter(prev1, 1);
+    	cha.getCounter(prev2, 2);
+    	cha.getCounter(prev3, 3);
+    }
+
     cha.getCounter(counter0, 0);
     cha.getCounter(counter1, 0);
     cha.getCounter(counter2, 0);
@@ -145,8 +152,16 @@ void chaPost(pcm::CHA& cha)
         IO_WR_BW = io_wr * 64 / 1E9;
         IO_RD_BW = io_rd * 64 / 1E9;
         
-        printf("IO_WR_BW = %lf  IO_RD_BW = %lf\n", IO_WR_BW, IO_RD_BW);
+        printf("IO_WR_BW=%lf IO_RD_BW=%lf ", IO_WR_BW, IO_RD_BW);
+	if (i == 1){
+		printf("\n");
+	}
     }
+
+    prev0 = counter0;
+    prev1 = counter1;
+    prev2 = counter2;
+    prev3 = counter3;
 }
 
 int main(int argc, char* argv[])
@@ -247,9 +262,9 @@ int main(int argc, char* argv[])
         // imc.print();
         // cha.print();
         // iio.print();
-        // iio.printFR();
+        iio.printFR();
         chaPost(cha);
-        continue;
+        continue;	// skips the follwoing lines
 
         imc.getCounter(counter0, 0);
         imc.getCounter(counter1, 1);
