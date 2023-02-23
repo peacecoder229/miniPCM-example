@@ -50,3 +50,13 @@ run_debug:
 
 fixed:
 	./IMC-raw.x -e imc/fixed
+
+cha-io-bw:
+	./IMC-raw.x -e cha/config=0x00c8f3ff00000435,name=PCIRDCUR -e cha/config=0x00cc43ff00000435,name=ITOM, -e cha/config=0x00cd43ff00000435,name=ITOM_NEAR
+iio-bw:
+	./IMC-raw.x -e iio/config=0x0007001000000183,name=mem_wr -e iio/config=0x0007001000000483,name=mem_rd
+cha-io-bw-iiofree:
+	./IMC-raw.x -e cha/config=0x00c8f3ff00000435,name=PCIRDCUR -e cha/config=0x00cc43ff00000435,name=ITOM, -e cha/config=0x00cd43ff00000435,name=ITOM_NEAR -e iio/config=0x0007001000000183
+
+io_mem_bw:
+	./IMC-raw.x -e imc/config=0x000000000000f005,name=UNC_M_CAS_COUNT.WR -e imc/config=0x000000000000cf05,name=UNC_M_CAS_COUNT.RD  -e imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0, -e cha/config=0x00c8f3ff00000435,name=PCIRDCUR -e cha/config=0x00cc43ff00000435,name=ITOM  -d 1

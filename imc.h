@@ -10,6 +10,8 @@ namespace pcm
 
 class IMC{
   public:
+    int eventCount;
+    
     IMC();
     bool program(std::string configStr);
     void enableFixed();
@@ -29,7 +31,6 @@ class IMC{
     static const std::vector<uint32> UBOX0_DEV_IDS;
     std::vector<std::vector<UncorePMU>> imcPMUs;
     std::array<std::vector<std::shared_ptr<MMIORange>>, SERVER_UNCORE_COUNTER_MAX_SOCKETS> imcbasemmioranges;
-    int eventCount;
 
     void initSocket2Ubox0Bus();
     std::vector<size_t> getServerMemBars(const uint32 numIMC,

@@ -10,6 +10,8 @@ namespace pcm
 
 class CHA{
   public:
+    int eventCount;
+    
     CHA();
     virtual ~CHA();
     bool program(std::string configStr);
@@ -21,7 +23,6 @@ class CHA{
     uint32 getMaxNumOfCBoxes() const;
     void initFreeze();
 
-    int eventCount;
     std::vector<std::vector<UncorePMU>> cboPMUs;
     std::vector<std::string> names;
 

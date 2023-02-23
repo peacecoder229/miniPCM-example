@@ -96,7 +96,7 @@ void IIO::run()
 void IIO::getCounter(std::vector<std::vector<uint64>>& M, int counterId)
 {
     if (counterId >= eventCount){
-        std::cerr << "Trying to read unused counter " << counterId;
+        std::cerr << "Trying to read unused counter " << counterId << std::endl;
         return;
     }
 

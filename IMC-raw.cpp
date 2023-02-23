@@ -14,24 +14,14 @@
 /*!     \file pcm-raw.cpp
   \brief Example of using CPU counters: implements a performance counter monitoring utility with raw events interface
   */
-// #include <iostream>
-// #include <unistd.h>
-// #include <signal.h>
-// #include <sys/time.h> // for gettimeofday()
-// #include <math.h>
-// #include <iomanip>
-// #include <stdlib.h>
-// #include <stdio.h>
-// #include <string.h>
-// #include <string>
-// #include <assert.h>
-// #include <bitset>
+
 #include "global.h"
 
 #include "imc.h"
 #include "cha.h"
 #include "iio.h"
 #include "slidingwindow.h"
+#include "functions.h"
 
 #include <vector>
 #define PCM_DELAY_DEFAULT 1.0 // in seconds
@@ -117,38 +107,6 @@ bool addEvent(string eventStr, pcm::IMC& imc, pcm::CHA& cha, pcm::IIO& iio)
     return true;
 }
 
-void chaPost(pcm::CHA& cha)
-{
-    uint64_t io_wr, io_rd;
-    double IO_WR_BW, IO_RD_BW;
-
-    static std::vector<std::vector<pcm::uint64>> counter0, prev0;
-    static std::vector<std::vector<pcm::uint64>> counter1, prev1;
-    static std::vector<std::vector<pcm::uint64>> counter2, prev2;
-    static std::vector<std::vector<pcm::uint64>> counter3, prev3;
-
-    cha.getCounter(counter0, 0);
-    cha.getCounter(counter1, 0);
-    cha.getCounter(counter2, 0);
-    cha.getCounter(counter3, 0);
-
-    for(int i = 0; i < 2; i++){
-        io_wr = 0;
-        io_rd = 0;
-
-        for(int j = 0; j < counter0[i].size(); j++){
-            io_wr += counter0[i][j] - prev0[i][j];
-            io_rd  += counter1[i][j] - prev1[i][j];
-        }
-
-        printf("socket %d: ");
-        IO_WR_BW = io_wr * 64 / 1E9;
-        IO_RD_BW = io_rd * 64 / 1E9;
-        
-        printf("IO_WR_BW = %lf  IO_RD_BW = %lf\n", IO_WR_BW, IO_RD_BW);
-    }
-}
-
 int main(int argc, char* argv[])
 {
     //set_signal_handlers();
@@ -227,21 +185,12 @@ int main(int argc, char* argv[])
     std::vector<std::vector<pcm::uint64>> counter4, prev4;
     std::vector<std::vector<pcm::uint64>> counterf, prevf;
 
-    // imc.getCounter(prev0, 0);
-    // imc.getCounter(prev1, 1);
-    // imc.getCounter(prev2, 2);
-    // imc.getCounter(prev3, 3);
-    // cha.getCounter(prev4, 0);
-    // imc.getFixed(prevf);
-
     double write, read, wpq, rpq;
     double ddrcyclecount = 1e9 * (delay*60) / (1/2.4);
     long long diff;
     slidingWindow<int> writeSW(10), readSW(10), wpqSW(10), rpqSW(10);
 
     while (1){
-    // for(int aaa = 1; aaa < 10; aaa++){
-
         ::sleep(delay);
 
         // imc.print();
@@ -249,48 +198,6 @@ int main(int argc, char* argv[])
         // iio.print();
         // iio.printFR();
         chaPost(cha);
-        continue;
-
-        imc.getCounter(counter0, 0);
-        imc.getCounter(counter1, 1);
-        imc.getCounter(counter2, 2);
-        imc.getCounter(counter3, 3);
-        cha.getCounter(counter4, 0);
-
-        write = 0;
-        read = 0;
-        wpq = 0;
-        rpq = 0;
-        
-        for(int i = 0; i < 2; i++){
-            for(int j = 0; j < counter0[i].size(); j++){
-                write += counter0[i][j] - prev0[i][j];
-                read  += counter1[i][j] - prev1[i][j];
-                wpq   += counter2[i][j] - prev2[i][j];
-                rpq   += counter3[i][j] - prev3[i][j];
-            }
-            printf("socket %d: ");
-            std::cout << "W/R: " << write/read << ", wpq = " << wpq/ddrcyclecount << ", rpq = " << rpq/ddrcyclecount << std::endl;
-            write = 0;
-            read = 0;
-            wpq = 0;
-            rpq = 0;
-        }
-
-        for(int i = 0; i < counter4.size(); i++){
-            for(int j = 0; j < counter4[i].size(); j++){
-                diff += counter4[i][j] - prev4[i][j];
-            }
-        }
-
-        std::cout << "diff = " << std::dec << diff << std::endl;
-        diff = 0;
-
-        prev0 = counter0;
-        prev1 = counter1;
-        prev2 = counter2;
-        prev3 = counter3;
-        prev4 = counter4;
+        imcPost(imc);
     }
-
 }

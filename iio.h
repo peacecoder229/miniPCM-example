@@ -10,6 +10,8 @@ namespace pcm
 
 class IIO{
   public:
+    int eventCount;
+
     IIO();
     virtual ~IIO(){};
     bool program(std::string configStr);
@@ -21,7 +23,6 @@ class IIO{
   private:
     void initFreeze();
 
-    int eventCount;
     std::vector<std::vector<UncorePMU>> iioPMUs;
     std::vector<std::vector<FreeRunBWCounters>> iioFRCtrs;
     std::vector<std::string> names;
