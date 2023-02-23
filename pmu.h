@@ -158,4 +158,15 @@ public:
     }
 };
 
+class FreeRunBWCounters
+{
+    typedef std::shared_ptr<MSRRegister> MSRRegisterPtr;
+public:
+    MSRRegisterPtr BWIn[8];
+    MSRRegisterPtr BWOut[8];
+
+    FreeRunBWCounters(const std::shared_ptr<SafeMsrHandle> & handle_, size_t offset_);
+    virtual ~FreeRunBWCounters() {}
+};
+
 }   // namespace pcm

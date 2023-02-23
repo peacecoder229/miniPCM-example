@@ -10,19 +10,22 @@ namespace pcm
 
 class CHA{
   public:
+    int eventCount;
+    
     CHA();
     virtual ~CHA();
     bool program(std::string configStr);
     void run();
     void getCounter(std::vector<std::vector<uint64>>& M, int counterId);
+    void print();
 
   private:
     uint32 getMaxNumOfCBoxes() const;
-    int32 getNumCores() const;
     void initFreeze();
 
-    int eventCount;
     std::vector<std::vector<UncorePMU>> cboPMUs;
+    std::vector<std::string> names;
+
 };
 
 inline auto CX_MSR_PMON_BOX_FILTER(uint32 Cbo)

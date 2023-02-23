@@ -69,10 +69,17 @@ bool IMC::program(std::string configStr){
     uint32 event;
     for (auto item : configArray)
     {
-        std::string f;
-        if (match("config=(0[xX][0-9a-fA-F]+)", item, f)) {
-            event = strtoll(f.c_str(), NULL, 16);
+        std::string f0, f1;
+        if (match("config=(0[xX][0-9a-fA-F]+)", item, f0)) {
+            event = strtoll(f0.c_str(), NULL, 16);
             std::cout << "Config read" << event << "\n";	
+        }
+        else if (match("name=(.+)", item, f1)) {
+            names.push_back(f1);
+            std::cout << "Name read " << f1 << "\n";
+        }
+        else if (item == "fixed") {
+            enableFixed();
         }
     }
 
@@ -137,7 +144,7 @@ void IMC::getDRAMClocks(std::vector<std::vector<uint64>>& M)
 void IMC::getCounter(std::vector<std::vector<uint64>>& M, int counterId)
 {
     if (counterId >= eventCount){
-        std::cerr << "Trying to read unused counter " << counterId;
+        std::cerr << "Trying to read unused counter " << counterId << std::endl;
         return;
     }
 
@@ -153,6 +160,24 @@ void IMC::getCounter(std::vector<std::vector<uint64>>& M, int counterId)
             imcPMUs[i][j].freeze();
             M[i][j] = *(imcPMUs[i][j].counterValue[counterId]);
             // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+            imcPMUs[i][j].unfreeze();
+        }
+    }
+}
+
+void IMC::getFixed(std::vector<std::vector<uint64>>& M)
+{
+    if (M.size() != imcPMUs.size()) {
+        M.resize(imcPMUs.size());
+        for(int i = 0; i < imcPMUs.size(); ++i){
+            M[i].resize(imcPMUs[i].size());
+        }
+    }
+
+    for(int i = 0; i < imcPMUs.size(); ++i){
+        for(int j = 0; j < imcPMUs[i].size(); ++j){
+            imcPMUs[i][j].freeze();
+            M[i][j] = *(imcPMUs[i][j].fixedCounterValue);
             imcPMUs[i][j].unfreeze();
         }
     }
@@ -222,6 +247,68 @@ std::vector<size_t> IMC::getServerMemBars(const uint32 numIMC, const uint32 root
         result.push_back(memBar);
     }
     return result;
+}
+
+void IMC::print()
+{
+    static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
+    uint64 result, prev;
+    double ddrcyclecount = 1e9 *60 / (1/2.4);
+
+    if(eventCount == 0) return;
+
+    if (M.empty()){
+        M.resize(eventCount);
+        for(int i = 0; i < eventCount; ++i){
+            M[i].resize(imcPMUs.size());
+                for(int j = 0; j < imcPMUs.size(); ++j){
+                    M[i][j].resize(imcPMUs[j].size());
+                }
+        }
+
+        for(int i = 0; i < imcPMUs.size(); ++i){
+            for(int j = 0; j < imcPMUs[i].size(); ++j){
+                imcPMUs[i][j].freeze();
+                for(int k = 0; k < eventCount; ++k){
+                    M[k][i][j] = *(imcPMUs[i][j].counterValue[k]);
+                    // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+                }
+                imcPMUs[i][j].unfreeze();
+            }
+        }
+
+        M_prev = M;
+    }
+    
+    for(int i = 0; i < imcPMUs.size(); ++i){
+        for(int j = 0; j < imcPMUs[i].size(); ++j){
+            imcPMUs[i][j].freeze();
+            for(int k = 0; k < eventCount; ++k){
+                M[k][i][j] = *(imcPMUs[i][j].counterValue[k]);
+                // printf("imcPMU[%d][%d] pmu.counterValue[%d] = %x value = %d\n", i, j, counterId, imcPMUs[i][j].counterValue[counterId], M[i][j]);
+            }
+            imcPMUs[i][j].unfreeze();
+        }
+    }
+
+    printf("imc:\n");
+    for(int soc = 0; soc < 2; soc++){
+        printf("  socket %d\n", soc);
+            for(int e = 0; e < eventCount; e++){
+                printf("   %d)", e+1);
+                result = 0;
+                prev = 0;
+                for(int i = 0; i < M[e][soc].size(); i++){
+                    result += M[e][soc][i];
+                    prev += M_prev[e][soc][i];
+                }
+                std::cout << names[e] << " = " 
+                          << std::dec << (result - prev) / ddrcyclecount
+                          << std::endl;
+            }
+    }
+
+    M_prev = M;
 }
 
 

@@ -63,6 +63,7 @@ constexpr auto SPR_CHA_MSR_STEP             = 0x10;
 constexpr auto SPR_M2IOSF_IIO_UNIT_CTL      = 0x3000;
 constexpr auto SPR_M2IOSF_IIO_CTR0          = 0x3008;
 constexpr auto SPR_M2IOSF_IIO_CTL0          = 0x3002;
+constexpr auto SPR_M2IOSF_IIO_FREE0         = 0x3800;
 constexpr auto SPR_M2IOSF_REG_STEP          = 0x10;
 constexpr auto SPR_M2IOSF_NUM               = 12;
 
@@ -74,4 +75,5 @@ constexpr auto SERVER_UNCORE_COUNTER_MAX_IIO_STACKS  = 16;
 constexpr auto SERVER_UNCORE_COUNTER_MAX_COUNTERS    = 4;
 constexpr auto SERVER_UNCORE_COUNTER_MAX_SOCKETS     = 2;
 
+constexpr auto UNC_PMON_UNIT_CTL_RSV = ((1 << 16) + (1 << 17));
 } // namespace pcm

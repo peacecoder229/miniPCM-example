@@ -5,6 +5,9 @@
 #include <sstream>
 #include <regex>
 #include <iostream>
+#include <unistd.h>
+
+#include "types.h"
 
 namespace pcm
 {
@@ -29,5 +32,7 @@ FILE * tryOpen(const char * path, const char * mode);
 std::string readSysFS(const char * path, bool silent);
 
 bool writeSysFS(const char * path, const std::string & value, bool silent);
+
+int32 getNumCores();
 
 }   // namespace pcm

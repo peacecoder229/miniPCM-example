@@ -102,4 +102,15 @@ bool writeSysFS(const char * path, const std::string & value, bool silent = fals
     return true;
 }
 
+int32 getNumCores()
+{
+    static int num_cores = -1;
+    if(num_cores >= 0) return num_cores;
+
+    // Only works for linux systems
+    num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+    
+    return num_cores;
+}
+
 }   // namespace pcm
