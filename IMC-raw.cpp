@@ -178,18 +178,6 @@ int main(int argc, char* argv[])
     std::cout.precision(4);
     std::cout << std::fixed;
 
-    std::vector<std::vector<pcm::uint64>> counter0, prev0;
-    std::vector<std::vector<pcm::uint64>> counter1, prev1;
-    std::vector<std::vector<pcm::uint64>> counter2, prev2;
-    std::vector<std::vector<pcm::uint64>> counter3, prev3;
-    std::vector<std::vector<pcm::uint64>> counter4, prev4;
-    std::vector<std::vector<pcm::uint64>> counterf, prevf;
-
-    double write, read, wpq, rpq;
-    double ddrcyclecount = 1e9 * (delay*60) / (1/2.4);
-    long long diff;
-    slidingWindow<int> writeSW(10), readSW(10), wpqSW(10), rpqSW(10);
-
     while (1){
         ::sleep(delay);
 
