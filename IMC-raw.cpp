@@ -119,6 +119,10 @@ bool addEvent(string eventStr, pcm::IMC& imc, pcm::CHA& cha, pcm::IIO& iio)
 
 void chaPost(pcm::CHA& cha)
 {
+
+
+    if(cha.eventCount == 0) return;
+
     uint64_t io_wr, io_rd;
     double IO_WR_BW, IO_RD_BW;
 
@@ -259,7 +263,7 @@ int main(int argc, char* argv[])
 
         ::sleep(delay);
 
-        // imc.print();
+        imc.print();
         // cha.print();
         // iio.print();
         iio.printFR();

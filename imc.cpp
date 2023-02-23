@@ -251,6 +251,8 @@ std::vector<size_t> IMC::getServerMemBars(const uint32 numIMC, const uint32 root
 
 void IMC::print()
 {
+    bool rawprint = false;
+    //bool rawprint = true;
     static std::vector<std::vector<std::vector<uint64>>> M, M_prev;
     uint64 result, prev;
     double ddrcyclecount = 1e9 *60 / (1/2.4);
@@ -291,6 +293,8 @@ void IMC::print()
         }
     }
 
+if(rawprint){
+
     printf("imc:\n");
     for(int soc = 0; soc < 2; soc++){
         printf("  socket %d\n", soc);
@@ -308,8 +312,36 @@ void IMC::print()
             }
     }
 
-    M_prev = M;
+   }
+
+else{
+
+
+// create total BW and print wpq and rpq
+
+	for(int soc = 0; soc < 2; soc++){
+		double tbw = 0, rbw=0, wbw=0, wpq=0, rpq=0;
+		//uint64 tbw_p = 0, rbw_p=0, wbw_p=0, wpq_p=0, rpq_p=0;
+		printf("  socket%d_BW=", soc);
+
+		for(int i = 0; i < M[0][soc].size(); i++){
+			wbw += (M[0][soc][i] - M_prev[0][soc][i]);
+			rbw += (M[1][soc][i] - M_prev[1][soc][i]);
+			wpq += (M[2][soc][i] - M_prev[2][soc][i]);
+		        rpq += (M[3][soc][i] - M_prev[3][soc][i]);
+		}
+		tbw=(((wbw + rbw) * 64) / 1e9);
+		printf("%.2f wr_bw=%.2f rd_bw=%.2f wpq=%.2f rpq=%.2f ", tbw, (wbw * 64 / 1e9) , (rbw * 64 / 1e9) , (wpq / ddrcyclecount) , (rpq / ddrcyclecount));
+
+	if(soc == 1){printf("\n");}
+
+
+
+
+	}
 }
 
+    M_prev = M;
+ }
 
 }   // namespace pcm
