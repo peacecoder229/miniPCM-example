@@ -74,9 +74,9 @@ inline void imcPost(pcm::IMC& imc)
     }
 
     imc.getCounter(counter0, 0);
-    imc.getCounter(counter1, 0);
-    imc.getCounter(counter2, 0);
-    imc.getCounter(counter3, 0);
+    imc.getCounter(counter1, 1);
+    imc.getCounter(counter2, 2);
+    imc.getCounter(counter3, 3);
 
     for(int soc = 0; soc < 2; soc++){
 		double tbw = 0, rbw=0, wbw=0, wpq=0, rpq=0;
