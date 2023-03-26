@@ -26,26 +26,30 @@ inline void chaPost(pcm::CHA& cha)
     }
 
     cha.getCounter(counter0, 0);
-    cha.getCounter(counter1, 0);
-    cha.getCounter(counter2, 0);
-    cha.getCounter(counter3, 0);
+    cha.getCounter(counter1, 1);
+    cha.getCounter(counter2, 2);
+    cha.getCounter(counter3, 3);
 
-    for(int i = 0; i < 2; i++){
+//counter0 PCIRDCUR counter1 itom
+
+    for(int i = 0; i < 1; i++){
         io_wr = 0;
         io_rd = 0;
 
         for(int j = 0; j < counter0[i].size(); j++){
-            io_wr += counter0[i][j] - prev0[i][j];
-            io_rd += counter1[i][j] - prev1[i][j];
+            //io_wr += counter0[i][j] - prev0[i][j];
+            //io_rd += counter1[i][j] - prev1[i][j];
+            io_rd += counter0[i][j] - prev0[i][j];   //pciRDcur  this matches system RD BW or CAS.RD
+            io_wr += counter1[i][j] - prev1[i][j];  //itoM  this matches CAS.WR
         }
 
-        printf("socket %d: ");
+	//printf("socket %d: ");
         IO_WR_BW = io_wr * 64 / 1E9;
         IO_RD_BW = io_rd * 64 / 1E9;
         
         printf("IO_WR_BW = %lf  IO_RD_BW = %lf  ", IO_WR_BW, IO_RD_BW);
     }
-    printf("\n");
+    //printf("\n");
 
     prev0 = counter0;
     prev1 = counter1;
@@ -78,7 +82,7 @@ inline void imcPost(pcm::IMC& imc)
     imc.getCounter(counter2, 2);
     imc.getCounter(counter3, 3);
 
-    for(int soc = 0; soc < 2; soc++){
+    for(int soc = 0; soc < 1; soc++){
 		double tbw = 0, rbw=0, wbw=0, wpq=0, rpq=0;
 		//uint64 tbw_p = 0, rbw_p=0, wbw_p=0, wpq_p=0, rpq_p=0;
 		printf("  socket%d_BW=", soc);

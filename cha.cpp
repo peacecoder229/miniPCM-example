@@ -23,7 +23,7 @@ inline UncorePMU makeCHAPMU(std::shared_ptr<SafeMsrHandle>& handle, uint32 cbo)
 CHA::CHA()
 {
     eventCount = 0;
-    cboPMUs.resize(2);
+    cboPMUs.resize(sockets);
 
     for (uint32 s = 0; s < cboPMUs.size(); ++s)
     {
@@ -168,7 +168,7 @@ void CHA::run()
 void CHA::getCounter(std::vector<std::vector<uint64>>& M, int counterId)
 {
     if (counterId >= eventCount){
-        std::cerr << "Trying to read unused counter " << counterId << std::endl;
+        //std::cerr << "Trying to read unused counter " << counterId << std::endl;
         return;
     }
 

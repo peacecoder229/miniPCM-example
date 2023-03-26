@@ -28,7 +28,7 @@ IMC::IMC()
     // TODO: change the hardcoded stuff
     int numChannels = 3;
     int imcno = 4;
-    imcPMUs.resize(2);
+    imcPMUs.resize(sockets);
     for(int socket_ = 0; socket_ < imcPMUs.size(); socket_++)
     {
         auto memBars = getServerMemBars(imcno, socket2UBOX0bus[socket_].first, socket2UBOX0bus[socket_].second);
@@ -144,7 +144,7 @@ void IMC::getDRAMClocks(std::vector<std::vector<uint64>>& M)
 void IMC::getCounter(std::vector<std::vector<uint64>>& M, int counterId)
 {
     if (counterId >= eventCount){
-        std::cerr << "Trying to read unused counter " << counterId << std::endl;
+//std::cerr << "Trying to read unused counter " << counterId << std::endl;
         return;
     }
 
