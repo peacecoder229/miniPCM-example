@@ -32,7 +32,7 @@ inline void chaPost(pcm::CHA& cha)
 
 //counter0 PCIRDCUR counter1 itom
 
-    for(int i = 0; i < 1; i++){
+    for(int i = 0; i < pcm::sockets; i++){
         io_wr = 0;
         io_rd = 0;
 
@@ -82,7 +82,7 @@ inline void imcPost(pcm::IMC& imc)
     imc.getCounter(counter2, 2);
     imc.getCounter(counter3, 3);
 
-    for(int soc = 0; soc < 1; soc++){
+    for(int soc = 0; soc < pcm::sockets; soc++){
 		double tbw = 0, rbw=0, wbw=0, wpq=0, rpq=0;
 		//uint64 tbw_p = 0, rbw_p=0, wbw_p=0, wpq_p=0, rpq_p=0;
 		printf("  socket%d_BW=", soc);
