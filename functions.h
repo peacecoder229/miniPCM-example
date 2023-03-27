@@ -63,7 +63,8 @@ inline void imcPost(pcm::IMC& imc, double n_sample_in_sec)
 
     uint64_t io_wr, io_rd;
     double IO_WR_BW, IO_RD_BW;
-    double ddrcyclecount = (1e9 * (1*60) / (1/2.4))*n_sample_in_sec;
+    //Bloew division by n_sample_in_sec is just a hack.. at the end total number of RPQ nad WPQ are convreted in per second. 
+    double ddrcyclecount = (1e9 * (1*60) / (1/2.4)) * (1 / n_sample_in_sec);
 
     static std::vector<std::vector<pcm::uint64>> counter0, prev0;
     static std::vector<std::vector<pcm::uint64>> counter1, prev1;
