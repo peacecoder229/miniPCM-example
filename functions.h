@@ -6,7 +6,7 @@
 
 #include <vector>
 
-inline void chaPost(pcm::CHA& cha)
+inline void chaPost(pcm::CHA& cha, double n_sample_in_sec)
 {
     if(cha.eventCount == 0) return;
 
@@ -44,8 +44,8 @@ inline void chaPost(pcm::CHA& cha)
         }
 
 	//printf("socket %d: ");
-        IO_WR_BW = io_wr * 64 / 1E9;
-        IO_RD_BW = io_rd * 64 / 1E9;
+        IO_WR_BW = n_sample_in_sec * io_wr * 64 / 1E9;
+        IO_RD_BW = n_sample_in_sec * io_rd * 64 / 1E9;
         
         printf("IO_WR_BW = %lf  IO_RD_BW = %lf  ", IO_WR_BW, IO_RD_BW);
     }
@@ -57,13 +57,13 @@ inline void chaPost(pcm::CHA& cha)
     prev3 = counter3;
 }
 
-inline void imcPost(pcm::IMC& imc)
+inline void imcPost(pcm::IMC& imc, double n_sample_in_sec)
 {
     if(imc.eventCount == 0) return;
 
     uint64_t io_wr, io_rd;
     double IO_WR_BW, IO_RD_BW;
-    double ddrcyclecount = 1e9 * (1*60) / (1/2.4);
+    double ddrcyclecount = (1e9 * (1*60) / (1/2.4))*n_sample_in_sec;
 
     static std::vector<std::vector<pcm::uint64>> counter0, prev0;
     static std::vector<std::vector<pcm::uint64>> counter1, prev1;
@@ -93,8 +93,8 @@ inline void imcPost(pcm::IMC& imc)
 			wpq += (counter2[soc][i] - prev2[soc][i]);
 		    rpq += (counter3[soc][i] - prev3[soc][i]);
 		}
-		tbw=(((wbw + rbw) * 64) / 1e9);
-		printf("%.2f wr_bw=%.2f rd_bw=%.2f wpq=%.2f rpq=%.2f ", tbw, (wbw * 64 / 1e9) , (rbw * 64 / 1e9) , (wpq / ddrcyclecount) , (rpq / ddrcyclecount));
+		tbw=(((wbw + rbw) * 64) / 1e9) * n_sample_in_sec;
+		printf("%.2f wr_bw=%.2f rd_bw=%.2f wpq=%.2f rpq=%.2f ", tbw, (wbw * 64 / 1e9)*n_sample_in_sec  , (rbw * 64 / 1e9)*n_sample_in_sec , (wpq / ddrcyclecount) , (rpq / ddrcyclecount));
 
     }
     printf("\n");

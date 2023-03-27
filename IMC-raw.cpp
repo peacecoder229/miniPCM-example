@@ -23,6 +23,10 @@
 #include "slidingwindow.h"
 #include "functions.h"
 
+#include <iostream>
+#include <thread>
+#include <chrono>
+
 #include <vector>
 #define PCM_DELAY_DEFAULT 1.0 // in seconds
 #define PCM_DELAY_MIN 0.015 // 15 milliseconds is practical on most modern CPUs
@@ -33,6 +37,20 @@ using namespace std;
 bool show_partial_core_output = false;
 bitset<MAX_CORES> ycores;
 bool flushLine = false;
+
+
+double calibratedMicroSeconds(unsigned long delay_micros){
+	//std::cout << "Sleeping for " << delay_micros << " micro seconds \n";
+	auto start_time = std::chrono::high_resolution_clock::now();
+	std::this_thread::sleep_for(std::chrono::microseconds(delay_micros));
+	auto end_time = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double, std::micro> elapsed_time = end_time - start_time;
+	return elapsed_time.count();
+	
+}
+
+
+
 
 void print_usage(const string progname)
 {
@@ -122,6 +140,8 @@ int main(int argc, char* argv[])
     double delay = -1.0;
     string program = string(argv[0]);
     int iteration = 1;
+    double dlymicro = -1;
+    double actualmicro;
 
     if (argc > 1) do
     {
@@ -160,6 +180,7 @@ int main(int argc, char* argv[])
             argv++;
             argc--;
             delay = atof(*argv);
+	    dlymicro = delay * 1000000;
             cout << "Delay in seconds " << delay  << "\n";
 
             // any other options positional that is a floating point number is treated as <delay>,
@@ -179,13 +200,16 @@ int main(int argc, char* argv[])
     std::cout << std::fixed;
 
     while (1){
-        ::sleep(delay);
+        //::sleep(delay);
+	actualmicro =  calibratedMicroSeconds(dlymicro);
+	double tot_sample_in_sec = 1e6 / actualmicro;
+	std::cout << "Actual sleep duration: " << actualmicro << " microseconds and total samples in seconds is " << tot_sample_in_sec << "\n"  ;
 
         // imc.print();
         // cha.print();
         // iio.print();
         // iio.printFR();
-        chaPost(cha);
-        imcPost(imc);
+        chaPost(cha, tot_sample_in_sec);
+        imcPost(imc, tot_sample_in_sec);
     }
 }
