@@ -22,7 +22,7 @@
 #include "iio.h"
 #include "slidingwindow.h"
 #include "functions.h"
-
+#include <csignal>
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -37,7 +37,9 @@ using namespace std;
 bool show_partial_core_output = false;
 bitset<MAX_CORES> ycores;
 bool flushLine = false;
-
+pcm::IMC* global_imc_ptr = nullptr;
+pcm::CHA* global_cha_ptr = nullptr;
+pcm::IIO* global_iio_ptr = nullptr;
 
 double calibratedMicroSeconds(unsigned long delay_micros){
 	//std::cout << "Sleeping for " << delay_micros << " micro seconds \n";
@@ -49,6 +51,25 @@ double calibratedMicroSeconds(unsigned long delay_micros){
 	
 }
 
+
+void signal_handler(int signum)
+{
+    std::cout << "Caught signal " << signum << ", gracefully shutting down." << std::endl;
+
+    // Call the initFreeze() function
+if (global_imc_ptr) {
+            global_imc_ptr->initFreeze();
+        }
+
+if (global_cha_ptr) {
+            global_cha_ptr->initFreeze();
+        }
+    // Terminate the program
+if (global_iio_ptr) {
+            global_iio_ptr->initFreeze();
+        }
+    exit(signum);
+}
 
 
 
@@ -132,6 +153,12 @@ int main(int argc, char* argv[])
     pcm::IMC imc;
     pcm::CHA cha;
     pcm::IIO iio;
+    global_imc_ptr = &imc;
+    global_cha_ptr = &cha;
+    global_iio_ptr = &iio;
+
+    std::signal(SIGINT, signal_handler);
+    std::signal(SIGTERM, signal_handler);
 
     cerr << "\n";
     cerr << " Processor Counter Monitor: Raw Event Monitoring Utility \n";
@@ -209,7 +236,9 @@ int main(int argc, char* argv[])
         // cha.print();
         // iio.print();
         // iio.printFR();
-        chaPost(cha, tot_sample_in_sec);
+        //chaPost(cha, tot_sample_in_sec, "iobw");
+        chaPost(cha, tot_sample_in_sec, "latency");
         imcPost(imc, tot_sample_in_sec);
+        iioPost(iio, tot_sample_in_sec);
     }
 }

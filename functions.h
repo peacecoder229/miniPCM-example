@@ -3,15 +3,65 @@
 #include "imc.h"
 #include "cha.h"
 #include "iio.h"
+#include <string>
 
 #include <vector>
 
-inline void chaPost(pcm::CHA& cha, double n_sample_in_sec)
+inline void iioPost(pcm::IIO & iio, double n_sample_in_sec)
+{
+	if(iio.eventCount == 0) return;
+	uint64_t iiocompbufocc, iiocompbufinsrt, iioclks;
+	double iio_rndtrip_lat;
+
+		
+	static std::vector<std::vector<pcm::uint64>> counter0, prev0;
+	static std::vector<std::vector<pcm::uint64>> counter1, prev1;
+	static std::vector<std::vector<pcm::uint64>> counter2, prev2;
+	static std::vector<std::vector<pcm::uint64>> counter3, prev3;
+
+	if (prev0.empty()) {
+	iio.getCounter(prev0, 0);
+	iio.getCounter(prev1, 1);
+	iio.getCounter(prev2, 2);
+	iio.getCounter(prev3, 3);
+	}
+
+	iio.getCounter(counter0, 0);
+	iio.getCounter(counter1, 1);
+	iio.getCounter(counter2, 2);
+	iio.getCounter(counter3, 3);
+	for(int i = 0; i < pcm::sockets; i++){
+		iiocompbufocc = 0;
+		iiocompbufinsrt = 0;
+		iioclks = 0;
+		for(int j =0 ; j < counter0[i].size(); j++){
+			iiocompbufocc += counter0[i][j] - prev0[i][j];
+			iiocompbufinsrt += counter1[i][j] - prev1[i][j];
+			iioclks += counter2[i][j] - prev2[i][j];
+		}
+
+		//iio_rndtrip_lat = (iiocompbufocc / iiocompbufinsrt / iioclks) * 1e9;
+		iio_rndtrip_lat = ((static_cast<double>(iiocompbufocc) / iiocompbufinsrt) / (iioclks / pcm::SPR_M2IOSF_NUM)) * 1e9;
+		printf("socket%d: IIO rnd trip lat " , i);
+		//printf("OCC=%1f, INSRT=%1f, CTICK=%1f , lat=%1f\n", iiocompbufocc, iiocompbufinsrt, iioclks, iio_rndtrip_lat);
+		printf("OCC=%llu, INSRT=%llu, CTICK=%llu, lat=%.5f\n", iiocompbufocc, iiocompbufinsrt, iioclks, iio_rndtrip_lat);
+
+	}
+	prev0 = counter0;
+	prev1 = counter1;
+	prev2 = counter2;
+	prev3 = counter3;
+}
+
+
+
+
+inline void chaPost(pcm::CHA& cha, double n_sample_in_sec, const std::string& analysis)
 {
     if(cha.eventCount == 0) return;
 
-    uint64_t io_wr, io_rd;
-    double IO_WR_BW, IO_RD_BW;
+    uint64_t io_wr, io_rd, torocc, torinsrt, chaclks;
+    double IO_WR_BW, IO_RD_BW, tor_latency;
 
     static std::vector<std::vector<pcm::uint64>> counter0, prev0;
     static std::vector<std::vector<pcm::uint64>> counter1, prev1;
@@ -35,19 +85,51 @@ inline void chaPost(pcm::CHA& cha, double n_sample_in_sec)
     for(int i = 0; i < pcm::sockets; i++){
         io_wr = 0;
         io_rd = 0;
+	torocc = 0;
+	torinsrt = 0;
+	chaclks = 0;
 
-        for(int j = 0; j < counter0[i].size(); j++){
-            //io_wr += counter0[i][j] - prev0[i][j];
-            //io_rd += counter1[i][j] - prev1[i][j];
-            io_rd += counter0[i][j] - prev0[i][j];   //pciRDcur  this matches system RD BW or CAS.RD
-            io_wr += counter1[i][j] - prev1[i][j];  //itoM  this matches CAS.WR
-        }
+	if( analysis == "iobw"){
 
-	//printf("socket %d: ");
-        IO_WR_BW = n_sample_in_sec * io_wr * 64 / 1E9;
-        IO_RD_BW = n_sample_in_sec * io_rd * 64 / 1E9;
-        
-        printf("IO_WR_BW = %lf  IO_RD_BW = %lf  ", IO_WR_BW, IO_RD_BW);
+		for(int j = 0; j < counter0[i].size(); j++){
+		    //io_wr += counter0[i][j] - prev0[i][j];
+		    //io_rd += counter1[i][j] - prev1[i][j];
+		    //
+		    io_rd += counter0[i][j] - prev0[i][j];   //pciRDcur  this matches system RD BW or CAS.RD
+		    io_wr += counter1[i][j] - prev1[i][j];  //itoM  this matches CAS.WR
+		}
+
+		//printf("socket IIO rnd trip latency: ");
+		IO_WR_BW = n_sample_in_sec * io_wr * 64 / 1E9;
+		IO_RD_BW = n_sample_in_sec * io_rd * 64 / 1E9;
+		
+		printf("IO_WR_BW = %lf  IO_RD_BW = %lf  ", IO_WR_BW, IO_RD_BW);
+
+	}
+	else if (analysis == "latency"){
+
+		for(int j = 0; j < counter0[i].size(); j++){
+			torocc += counter0[i][j] - prev0[i][j];
+			torinsrt += counter1[i][j] - prev1[i][j];
+			chaclks += counter2[i][j] - prev2[i][j];
+		}
+		int cha_count =  counter0[0].size();
+		//printf("No of CHA is %d\n", cha_count);
+
+		if(torinsrt < 1){
+			tor_latency = 0;
+		}
+		else {
+		tor_latency = ((static_cast<double>(torocc) / torinsrt) / (chaclks / cha_count )) * 1e9;
+		}
+		printf("CHA latency is %.3f " , tor_latency);
+	}
+
+	else {
+		printf("CHA analysis doesn't match\n");
+	}
+
+
     }
     //printf("\n");
 

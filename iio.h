@@ -19,9 +19,10 @@ class IIO{
     void getCounter(std::vector<std::vector<uint64>>& M, int counterId);
     void print();
     void printFR();
+    void initFreeze();
 
   private:
-    void initFreeze();
+    //void initFreeze();
 
     std::vector<std::vector<UncorePMU>> iioPMUs;
     std::vector<std::vector<FreeRunBWCounters>> iioFRCtrs;

@@ -18,10 +18,10 @@ class CHA{
     void run();
     void getCounter(std::vector<std::vector<uint64>>& M, int counterId);
     void print();
-
+    void initFreeze();
   private:
     uint32 getMaxNumOfCBoxes() const;
-    void initFreeze();
+    //void initFreeze();
 
     std::vector<std::vector<UncorePMU>> cboPMUs;
     std::vector<std::string> names;
