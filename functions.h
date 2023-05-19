@@ -188,3 +188,54 @@ inline void imcPost(pcm::IMC& imc, double n_sample_in_sec)
     prev3 = counter3;
 
 }
+
+inline void imcPostnutanix(pcm::IMC& imc, double n_sample_in_sec)
+{
+    if(imc.eventCount == 0) return;
+
+    //Bloew division by n_sample_in_sec is just a hack.. at the end total number of RPQ nad WPQ are convreted in per second. 
+    double ddrcyclecount = (1e9 * (1*60) / (1/2.4)) * (1 / n_sample_in_sec);
+
+    static std::vector<std::vector<pcm::uint64>> counter0, prev0;
+    static std::vector<std::vector<pcm::uint64>> counter1, prev1;
+    static std::vector<std::vector<pcm::uint64>> counter2, prev2;
+    static std::vector<std::vector<pcm::uint64>> counter3, prev3;
+
+    if (prev0.empty()) {
+    	imc.getCounter(prev0, 0);
+    	imc.getCounter(prev1, 1);
+    	imc.getCounter(prev2, 2);
+    	imc.getCounter(prev3, 3);
+    }
+
+    imc.getCounter(counter0, 0);
+    imc.getCounter(counter1, 1);
+    imc.getCounter(counter2, 2);
+    imc.getCounter(counter3, 3);
+
+    int imc_count = counter0[0].size();
+
+    for(int soc = 0; soc < pcm::sockets; soc++){
+		double tbw = 0, ncyc = 0, wpq=0, rpq=0;
+		//uint64 tbw_p = 0, rbw_p=0, wbw_p=0, wpq_p=0, rpq_p=0;
+		printf("  socket%d_BW=", soc);
+
+		for(int i = 0; i < counter0[soc].size(); i++){
+			tbw += (counter0[soc][i] - prev0[soc][i]);
+			ncyc += (counter1[soc][i] - prev1[soc][i]);
+			wpq += (counter2[soc][i] - prev2[soc][i]);
+		    rpq += (counter3[soc][i] - prev3[soc][i]);
+		}
+		ncyc /= imc_count;
+		tbw=(( tbw * 64) / 1e9) * n_sample_in_sec;
+		printf("tot_bw=%.2f wpq=%.2f rpq=%.2f ", tbw, (wpq / ncyc) , (rpq / ncyc));
+
+    }
+    printf("\n");
+
+    prev0 = counter0;
+    prev1 = counter1;
+    prev2 = counter2;
+    prev3 = counter3;
+
+}

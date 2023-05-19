@@ -230,15 +230,16 @@ int main(int argc, char* argv[])
         //::sleep(delay);
 	actualmicro =  calibratedMicroSeconds(dlymicro);
 	double tot_sample_in_sec = 1e6 / actualmicro;
-	std::cout << "Actual sleep duration: " << actualmicro << " microseconds and total samples in seconds is " << tot_sample_in_sec << "\n"  ;
+	//std::cout << "Actual sleep duration: " << actualmicro << " microseconds and total samples in seconds is " << tot_sample_in_sec << "\n"  ;
 
         // imc.print();
         // cha.print();
         // iio.print();
         // iio.printFR();
         //chaPost(cha, tot_sample_in_sec, "iobw");
-        chaPost(cha, tot_sample_in_sec, "latency");
-        imcPost(imc, tot_sample_in_sec);
-        iioPost(iio, tot_sample_in_sec);
+        //chaPost(cha, tot_sample_in_sec, "latency");
+        imcPostnutanix(imc, tot_sample_in_sec);
+        //imcPost(imc, tot_sample_in_sec);
+        //iioPost(iio, tot_sample_in_sec);
     }
 }

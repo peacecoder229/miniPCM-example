@@ -77,5 +77,5 @@ constexpr auto SERVER_UNCORE_COUNTER_MAX_COUNTERS    = 4;
 constexpr auto SERVER_UNCORE_COUNTER_MAX_SOCKETS     = 2;
 
 constexpr auto UNC_PMON_UNIT_CTL_RSV = ((1 << 16) + (1 << 17));
-constexpr auto sockets = 1;
+constexpr auto sockets = 2;
 } // namespace pcm
