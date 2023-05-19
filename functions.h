@@ -228,7 +228,7 @@ inline void imcPostnutanix(pcm::IMC& imc, double n_sample_in_sec)
 		}
 		ncyc /= imc_count;
 		tbw=(( tbw * 64) / 1e9) * n_sample_in_sec;
-		printf("tot_bw=%.2f wpq=%.2f rpq=%.2f ", tbw, (wpq / ncyc) , (rpq / ncyc));
+		printf("tot_bw=%.2f wpq=%.2f rpq=%.2f ", tbw, (wpq / ncyc / 126) , (rpq / ncyc / 126));
 
     }
     printf("\n");
