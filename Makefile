@@ -61,6 +61,6 @@ cha-io-bw-iiofree:
 io_rnd_lat:
 	./IMC-raw.x -e iio/config=0x000400000000ffd5,name=iio_occ -e iio/config=0x00070ff0000004c2,name=iio_insrt -e iio/config=0x0000000000000001,name=iioclocks -d 1
 io_mem_bw:
-	./IMC-raw.x -e imc/config=0x000000000000f005,name=UNC_M_CAS_COUNT.WR -e imc/config=0x000000000000cf05,name=UNC_M_CAS_COUNT.RD  -e imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0, -e cha/config=0x00c8f3ff00000435,name=PCIRDCUR -e cha/config=0x00cc43ff00000435,name=ITOM  -d 1
+	./IMC-raw.x -e imc/config=0x000000000000f005,name=UNC_M_CAS_COUNT.WR -e imc/config=0x000000000000cf05,name=UNC_M_CAS_COUNT.RD  -e imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0, -e cha/config=0x00c8f3ff00000435,name=PCIRDCUR -e cha/config=0x00cc43ff00000435,name=ITOM -e cha/config=0x0000000000000001,name=CHACLKS  -d 1
 cha-lat:
 	./IMC-raw.x -e cha/config=0x00c817fe00000136,name=TOROCC -e cha/config=0x00c817fe00000135,name=TORINSRT -e cha/config=0x0000000000000001,name=CHACLKS -d 1
