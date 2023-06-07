@@ -215,6 +215,19 @@ int main(int argc, char* argv[])
         }
     } while (argc > 1); // end of command line parsing loop
 
+    // Begin：Hardcode events for Nutanix
+    std::vector<std::string> event_list;
+    event_list.push_back("imc/config=0x000000000000ff05,name=UNC_M_CAS_COUNT.ALL");
+    event_list.push_back("imc/config=0x0000000000000101,name=UNC_M_CLOCKTICKS");
+    event_list.push_back("imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0");
+    event_list.push_back("imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0");
+    for (auto& event : event_list) {
+      if (addEvent(event, imc, cha, iio) == false) {
+        exit(EXIT_FAILURE);
+      }
+    }
+    // End: Hardcode events for Nutanix
+
     imc.run();
     cha.run();
     iio.run();
