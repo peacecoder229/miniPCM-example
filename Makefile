@@ -1,7 +1,7 @@
 all: utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o IMC-raw
 
 IMC-raw: IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o
-	g++ IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o -o IMC-raw.x 
+	g++ IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o -static -o IMC-raw.x -lpthread
 
 utils.o: utils.h utils.cpp global.h types.h
 	g++ -c utils.cpp -o utils.o
