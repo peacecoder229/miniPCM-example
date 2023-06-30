@@ -13,6 +13,7 @@ class IMC{
     int eventCount;
     int numChannels;
     int imcno;
+    uint32 MC_CH_PMON_STEP;
     
     IMC();
     bool program(std::string configStr);

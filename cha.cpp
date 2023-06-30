@@ -23,13 +23,31 @@ inline UncorePMU makeCHAPMU(std::shared_ptr<SafeMsrHandle>& handle, uint32 cbo)
 CHA::CHA()
 {
     eventCount = 0;
+    maxCBoxes = 0;
     cboPMUs.resize(sockets);
-
+    uint32 cpu_model = getCPUModel();
     for (uint32 s = 0; s < cboPMUs.size(); ++s)
     {
         auto handle = (s == 0) ? std::make_shared<SafeMsrHandle>(0) 
                                : std::make_shared<SafeMsrHandle>(getNumCores()-1);
-        for (uint32 cbo = 0; cbo < getMaxNumOfCBoxes(); ++cbo)
+
+	switch(cpu_model) {
+            case SPR:
+                maxCBoxes = getMaxNumOfCBoxes();
+                break;
+            case GNR:
+                maxCBoxes = getMaxNumOfCBoxesGN(handle, 0x3fed); // replace MSR_PMON_NUMBER_CBOS with appropriate value
+                break;
+            case SRF:
+                maxCBoxes = getMaxNumOfCBoxesGN(handle, 0x3FCF); // replace MSR_PMON_NUMBER_CBOS with appropriate value
+                break;
+            default:
+                maxCBoxes = getMaxNumOfCBoxes();  // Default handling
+                break;
+        }
+
+
+        for (uint32 cbo = 0; cbo < maxCBoxes; ++cbo)
         {
             cboPMUs[s].push_back(makeCHAPMU(handle, cbo));
         }
@@ -100,6 +118,20 @@ uint32 CHA::getMaxNumOfCBoxes() const
 
     return num;
 }
+
+uint32 CHA::getMaxNumOfCBoxesGN(std::shared_ptr<SafeMsrHandle>& handle, uint64 regval) const 
+{
+    uint64 val = 0;
+    const auto MSR_PMON_NUMBER_CBOS = regval;
+    handle->read(MSR_PMON_NUMBER_CBOS, &val);
+    uint32 num = (uint32)(val & 511);
+    assert(num >= 0);
+    std::cout << "Number of CHA =" << num << "\n";
+    return num ;
+}
+
+
+
 
 bool CHA::program(std::string configStr)
 {

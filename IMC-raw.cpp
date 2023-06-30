@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
     //set_signal_handlers();
 
     pcm::IMC imc;
-    //pcm::CHA cha;
+    pcm::CHA cha;
     //pcm::IIO iio;
     global_imc_ptr = &imc;
     //global_cha_ptr = &cha;

@@ -29,6 +29,7 @@ constexpr auto SERVER_MC_CH_PMON_BASE_ADDR        = 0x024e000;
 // but program is stuck
 //constexpr auto SERVER_MC_CH_PMON_STEP             = 0x8000; // It seems 3 channels were assigned and currently ch0 is mapped to ch0 and ch1 is mapped to ch2
 constexpr auto SERVER_MC_CH_PMON_STEP             = 0x4000; // It seems 3 channels were assigned and currently ch0 is mapped to ch0 and ch1 is mapped to ch2
+constexpr auto SPR_MC_CH_PMON_STEP             = 0x8000;
 constexpr auto SERVER_MC_CH_PMON_SIZE             = 0x1000;
 constexpr auto SERVER_MC_CH_PMON_BOX_CTL_OFFSET   = 0x00 + SERVER_MC_CH_PMON_BASE_ALIGN_DELTA;
 constexpr auto SERVER_MC_CH_PMON_CTL0_OFFSET      = 0x40 + SERVER_MC_CH_PMON_BASE_ALIGN_DELTA;

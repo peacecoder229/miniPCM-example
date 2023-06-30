@@ -32,16 +32,19 @@ IMC::IMC()
             case SPR:  // SPR is an enum value, it's an integer constant
                 numChannels = 2;
                 imcno = 4;
+		MC_CH_PMON_STEP = SPR_MC_CH_PMON_STEP;
                 break;
             case GNR:  // GNR is an enum value, it's an integer constant
             case SRF:  // SRF is an enum value, it's an integer constant
                 numChannels = 8;
                 imcno = 1;
+		MC_CH_PMON_STEP = SERVER_MC_CH_PMON_STEP;
 		std::cout << "Model detected is GNR or SRF" << std::endl;
                 break;
             default:
                 numChannels = 8;  // Default values
                 imcno = 1;        // Default values
+		MC_CH_PMON_STEP = SERVER_MC_CH_PMON_STEP;
                 break;
 	}
     imcPMUs.resize(sockets);
@@ -54,7 +57,7 @@ IMC::IMC()
             imcbasemmioranges[socket_].push_back(std::make_shared<MMIORange>(memBar, PCM_SERVER_IMC_MMAP_SIZE));
             for (int channel = 0; channel < numChannels; ++channel)
             {
-                auto handle = std::make_shared<MMIORange>(memBar + SERVER_MC_CH_PMON_BASE_ADDR + channel * SERVER_MC_CH_PMON_STEP,
+                auto handle = std::make_shared<MMIORange>(memBar + SERVER_MC_CH_PMON_BASE_ADDR + channel * MC_CH_PMON_STEP,
                                                           SERVER_MC_CH_PMON_SIZE, false);
                 //std::cout << "debug BOX CTL is at " << std::hex 
                 //          << (SERVER_MC_CH_PMON_BASE_ADDR + channel * SERVER_MC_CH_PMON_STEP) << "And MMIO base at " << memBar << std::dec << std::endl;
