@@ -12,7 +12,19 @@
 namespace pcm
 {
 
+enum SupportedCPUModels
+    {
+        ICX = 106,
+        SPR = 143,
+        EMR = 207,
+        GNR = 173,
+        GNR_D = 174,
+        GRR = 182,
+        SRF = 175,
+        UNSUPPORTED = 5555
+    };
 std::vector<std::string> split(const std::string & str, const char delim);
+std::tuple<double, double, double> getMultipliersForModel(uint32 cpu_model);
 bool match(const std::string& subtoken, const std::string& sname, std::string& result);
 class s_expect : public std::string
 {
@@ -34,5 +46,22 @@ std::string readSysFS(const char * path, bool silent);
 bool writeSysFS(const char * path, const std::string & value, bool silent);
 
 int32 getNumCores();
+
+//extern uint32 cpu_model;
+uint32 getCPUModel();
+
+
+
+union PCM_CPUID_INFO
+{
+    int array[4];
+    struct { unsigned int eax, ebx, ecx, edx; } reg;
+};
+
+inline void pcm_cpuid(int leaf, PCM_CPUID_INFO& info)
+{
+    __asm__ __volatile__("cpuid" : \
+        "=a" (info.reg.eax), "=b" (info.reg.ebx), "=c" (info.reg.ecx), "=d" (info.reg.edx) : "a" (leaf));
+}
 
 }   // namespace pcm

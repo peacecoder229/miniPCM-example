@@ -17,7 +17,6 @@ UncorePMU::UncorePMU(const HWRegisterPtr& unitControl_,
     const HWRegisterPtr& filter0,
     const HWRegisterPtr& filter1
 ) :
-    cpu_model_(0),
     eventCount(0),
     unitControl(unitControl_),
     counterControl{ counterControl0, counterControl1, counterControl2, counterControl3 },

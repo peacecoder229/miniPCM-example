@@ -17,15 +17,18 @@
 namespace pcm
 {
 
-
 constexpr auto PCM_INTEL_PCI_VENDOR_ID            = 0x8086;
 constexpr auto PCM_INVALID_DEV_ADDR               = ~(uint32)0UL;
 constexpr auto PCM_INVALID_FUNC_ADDR              = ~(uint32)0UL;
 
 constexpr auto SERVER_MC_CH_PMON_REAL_BASE_ADDR   = 0x22800;
 constexpr auto SERVER_MC_CH_PMON_BASE_ALIGN_DELTA = 0x00800;
-constexpr auto SERVER_MC_CH_PMON_BASE_ADDR        = SERVER_MC_CH_PMON_REAL_BASE_ADDR - SERVER_MC_CH_PMON_BASE_ALIGN_DELTA;
-constexpr auto SERVER_MC_CH_PMON_STEP             = 0x8000; // It seems 3 channels were assigned and currently ch0 is mapped to ch0 and ch1 is mapped to ch2
+//constexpr auto SERVER_MC_CH_PMON_BASE_ADDR        = SERVER_MC_CH_PMON_REAL_BASE_ADDR - SERVER_MC_CH_PMON_BASE_ALIGN_DELTA;
+constexpr auto SERVER_MC_CH_PMON_BASE_ADDR        = 0x024e000;
+//0x024e800 as specified in GNR PCM code leads to illegal args why.. deducting 800 from it does not show the same issue.
+// but program is stuck
+//constexpr auto SERVER_MC_CH_PMON_STEP             = 0x8000; // It seems 3 channels were assigned and currently ch0 is mapped to ch0 and ch1 is mapped to ch2
+constexpr auto SERVER_MC_CH_PMON_STEP             = 0x4000; // It seems 3 channels were assigned and currently ch0 is mapped to ch0 and ch1 is mapped to ch2
 constexpr auto SERVER_MC_CH_PMON_SIZE             = 0x1000;
 constexpr auto SERVER_MC_CH_PMON_BOX_CTL_OFFSET   = 0x00 + SERVER_MC_CH_PMON_BASE_ALIGN_DELTA;
 constexpr auto SERVER_MC_CH_PMON_CTL0_OFFSET      = 0x40 + SERVER_MC_CH_PMON_BASE_ALIGN_DELTA;
@@ -77,5 +80,5 @@ constexpr auto SERVER_UNCORE_COUNTER_MAX_COUNTERS    = 4;
 constexpr auto SERVER_UNCORE_COUNTER_MAX_SOCKETS     = 2;
 
 constexpr auto UNC_PMON_UNIT_CTL_RSV = ((1 << 16) + (1 << 17));
-constexpr auto sockets = 1;
+constexpr auto sockets = 2;
 } // namespace pcm

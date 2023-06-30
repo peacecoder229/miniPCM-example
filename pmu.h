@@ -18,7 +18,6 @@ public:
 class UncorePMU
 {
     typedef std::shared_ptr<HWRegister> HWRegisterPtr;
-    uint32 cpu_model_;
     uint32 getCPUModel();
     uint32 eventCount;
     //HWRegisterPtr unitControl;

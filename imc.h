@@ -11,6 +11,8 @@ namespace pcm
 class IMC{
   public:
     int eventCount;
+    int numChannels;
+    int imcno;
     
     IMC();
     bool program(std::string configStr);

@@ -64,3 +64,6 @@ io_mem_bw:
 	./IMC-raw.x -e imc/config=0x000000000000f005,name=UNC_M_CAS_COUNT.WR -e imc/config=0x000000000000cf05,name=UNC_M_CAS_COUNT.RD  -e imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0, -e cha/config=0x00c8f3ff00000435,name=PCIRDCUR -e cha/config=0x00cc43ff00000435,name=ITOM -e cha/config=0x0000000000000001,name=CHACLKS  -d 1
 cha-lat:
 	./IMC-raw.x -e cha/config=0x00c817fe00000136,name=TOROCC -e cha/config=0x00c817fe00000135,name=TORINSRT -e cha/config=0x0000000000000001,name=CHACLKS -d 1
+
+imc_ntnx:
+	./IMC-raw.x -e imc/config=0x000000000000ff05,name=UNC_M_CAS_COUNT.ALL -e imc/config=0x0000000000000101,name=UNC_M_CLOCKTICKS  -e imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0 -d 1

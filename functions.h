@@ -4,7 +4,7 @@
 #include "cha.h"
 #include "iio.h"
 #include <string>
-
+#include "utils.h"
 #include <vector>
 
 inline void iioPost(pcm::IIO & iio, double n_sample_in_sec)
@@ -188,3 +188,66 @@ inline void imcPost(pcm::IMC& imc, double n_sample_in_sec)
     prev3 = counter3;
 
 }
+
+
+inline void imcPostnutanix(pcm::IMC& imc, double n_sample_in_sec)
+{
+    if(imc.eventCount == 0) return;
+
+    //Bloew division by n_sample_in_sec is just a hack.. at the end total number of RPQ nad WPQ are convreted in per second.
+    //Actual ddr cycles are counted here by 2nd counter need to make sure 2nd counter is supplied with this ddr cycle event
+    ///IMC-raw.x -e imc/config=0x000000000000ff05,name=UNC_M_CAS_COUNT.ALL -e imc/config=0x0000000000000101,name=UNC_M_CLOCKTICKS  -e imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0
+
+    pcm::uint32 cpu_model = pcm::getCPUModel();
+    double tbw_multiplier, wpq_multiplier, rpq_multiplier;
+    std::tie(tbw_multiplier, wpq_multiplier, rpq_multiplier) = pcm::getMultipliersForModel(cpu_model);	
+
+    static std::vector<std::vector<pcm::uint64>> counter0, prev0;
+    static std::vector<std::vector<pcm::uint64>> counter1, prev1;
+    static std::vector<std::vector<pcm::uint64>> counter2, prev2;
+    static std::vector<std::vector<pcm::uint64>> counter3, prev3;
+
+    if (prev0.empty()) {
+        imc.getCounter(prev0, 0);
+        imc.getCounter(prev1, 1);
+        imc.getCounter(prev2, 2);
+        imc.getCounter(prev3, 3);
+    }
+
+    imc.getCounter(counter0, 0);
+    imc.getCounter(counter1, 1);
+    imc.getCounter(counter2, 2);
+    imc.getCounter(counter3, 3);
+
+    int imc_count = counter0[0].size();
+
+    for(int soc = 0; soc < pcm::sockets; soc++){
+                double tbw = 0, ncyc = 0, wpq=0, rpq=0;
+                //uint64 tbw_p = 0, rbw_p=0, wbw_p=0, wpq_p=0, rpq_p=0;
+                printf("  socket%d_BW=", soc);
+
+                for(int i = 0; i < counter0[soc].size(); i++){
+                        tbw += (counter0[soc][i] - prev0[soc][i]);
+                        ncyc += (counter1[soc][i] - prev1[soc][i]);
+                        wpq += (counter2[soc][i] - prev2[soc][i]);
+                    rpq += (counter3[soc][i] - prev3[soc][i]);
+                }
+                ncyc /= imc_count;
+                tbw=(( tbw * 64) / 1e9) * n_sample_in_sec;
+
+		tbw *= tbw_multiplier;
+        	wpq *= wpq_multiplier;
+        	rpq *= rpq_multiplier;
+
+                printf("tot_bw=%.2f memWR_lvl=%.2f memRD_lvl=%.2f ", tbw, (wpq / ncyc / 126) , (rpq / ncyc / 126));
+
+    }
+    printf("\n");
+
+    prev0 = counter0;
+    prev1 = counter1;
+    prev2 = counter2;
+    prev3 = counter3;
+
+}
+

@@ -26,8 +26,24 @@ IMC::IMC()
     eventCount = 0;
     initSocket2Ubox0Bus();
     // TODO: change the hardcoded stuff
-    int numChannels = 3;
-    int imcno = 4;
+    //
+     uint32 cpu_model = getCPUModel();
+        switch(cpu_model) {
+            case SPR:  // SPR is an enum value, it's an integer constant
+                numChannels = 2;
+                imcno = 4;
+                break;
+            case GNR:  // GNR is an enum value, it's an integer constant
+            case SRF:  // SRF is an enum value, it's an integer constant
+                numChannels = 8;
+                imcno = 1;
+		std::cout << "Model detected is GNR or SRF" << std::endl;
+                break;
+            default:
+                numChannels = 8;  // Default values
+                imcno = 1;        // Default values
+                break;
+	}
     imcPMUs.resize(sockets);
     for(int socket_ = 0; socket_ < imcPMUs.size(); socket_++)
     {
@@ -40,8 +56,8 @@ IMC::IMC()
             {
                 auto handle = std::make_shared<MMIORange>(memBar + SERVER_MC_CH_PMON_BASE_ADDR + channel * SERVER_MC_CH_PMON_STEP,
                                                           SERVER_MC_CH_PMON_SIZE, false);
-                std::cout << "debug BOX CTL is at " << std::hex 
-                          << (memBar + SERVER_MC_CH_PMON_BASE_ADDR + channel * SERVER_MC_CH_PMON_STEP) << std::dec << std::endl;
+                //std::cout << "debug BOX CTL is at " << std::hex 
+                //          << (SERVER_MC_CH_PMON_BASE_ADDR + channel * SERVER_MC_CH_PMON_STEP) << "And MMIO base at " << memBar << std::dec << std::endl;
                 imcPMUs[socket_].push_back(makeIMCPMU(handle));
             }
         }
@@ -114,7 +130,7 @@ void IMC::enableFixed()
 void IMC::initFreeze()
 {
     for (auto& imcPMUsPerSocket : imcPMUs)
-        for (auto& imcPMU : imcPMUsPerSocket)
+        for (auto& imcPMU : imcPMUsPerSocket) 
             imcPMU.initFreeze();
 }
 
