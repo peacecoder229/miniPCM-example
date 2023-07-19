@@ -34,14 +34,18 @@ IMC::IMC()
         auto memBars = getServerMemBars(imcno, socket2UBOX0bus[socket_].first, socket2UBOX0bus[socket_].second);
         for (auto & memBar : memBars)
         {
+	    #ifdef PCM_DEBUG
             std::cout << "membar for imc " << std::hex << memBar << std::dec << std::endl;
+	    #endif
             imcbasemmioranges[socket_].push_back(std::make_shared<MMIORange>(memBar, PCM_SERVER_IMC_MMAP_SIZE));
             for (int channel = 0; channel < numChannels; ++channel)
             {
                 auto handle = std::make_shared<MMIORange>(memBar + SERVER_MC_CH_PMON_BASE_ADDR + channel * SERVER_MC_CH_PMON_STEP,
                                                           SERVER_MC_CH_PMON_SIZE, false);
+	    #ifdef PCM_DEBUG
                 std::cout << "debug BOX CTL is at " << std::hex 
                           << (memBar + SERVER_MC_CH_PMON_BASE_ADDR + channel * SERVER_MC_CH_PMON_STEP) << std::dec << std::endl;
+	    #endif
                 imcPMUs[socket_].push_back(makeIMCPMU(handle));
             }
         }
@@ -72,11 +76,15 @@ bool IMC::program(std::string configStr){
         std::string f0, f1;
         if (match("config=(0[xX][0-9a-fA-F]+)", item, f0)) {
             event = strtoll(f0.c_str(), NULL, 16);
-            std::cout << "Config read" << event << "\n";	
+	    #ifdef PCM_DEBUG
+            std::cout << "Config read" << event << "\n";
+    	    #endif	    
         }
         else if (match("name=(.+)", item, f1)) {
             names.push_back(f1);
+	   #ifdef PCM_DEBUG
             std::cout << "Name read " << f1 << "\n";
+	   #endif
         }
         else if (item == "fixed") {
             enableFixed();
@@ -215,8 +223,10 @@ void IMC::initSocket2Ubox0Bus()
         {
            // match
            if(ubox_dev_id == device_id)
-           {
+           {    
+		#ifdef PCM_DEBUG
                 std::cout << "DEBUG: found bus " << std::hex << bus << " with device ID " << device_id << std::dec << "\n";
+		#endif
                 socket2UBOX0bus.push_back(std::make_pair(mcfg[s].PCISegmentGroupNumber,bus));
                 break;
            }

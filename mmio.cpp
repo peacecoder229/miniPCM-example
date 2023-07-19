@@ -17,8 +17,9 @@ MMIORange::MMIORange(uint64 baseAddr_, uint64 size_, bool readonly_) :
        throw std::exception();
     }
     fd = handle;
-
+    #ifdef PCM_DEBUG
     std::cout << "baseAddr_ = " << std::hex << baseAddr_ << std::endl;
+    #endif
 
     const int prot = readonly ? PROT_READ : (PROT_READ | PROT_WRITE);
     mmapAddr = (char *)mmap(NULL, size, prot, MAP_SHARED, fd, baseAddr_);

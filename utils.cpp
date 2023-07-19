@@ -21,7 +21,9 @@ bool match(const std::string& subtoken, const std::string& sname, std::string& r
 	std::regex rgx(subtoken);
 	std::smatch matched;
 	if (std::regex_search(sname.begin(), sname.end(), matched, rgx)){
+#ifdef PCM_DEBUG
 		std::cout << "match: " << matched[1] << '\n';
+#endif
 		result= matched[1];
 		return true;
 	}

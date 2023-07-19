@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
     std::signal(SIGTERM, signal_handler);
 
     cerr << "\n";
-    cerr << " Processor Counter Monitor: Raw Event Monitoring Utility \n";
+    cerr << " SPR System Memory Monitor Utility Rev1p0\n";
     cerr << "\n";
 
     double delay = -1.0;
