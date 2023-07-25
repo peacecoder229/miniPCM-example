@@ -27,6 +27,27 @@ std::tuple<double, double, double> getMultipliersForModel(uint32 cpu_model) {
 
 
 
+std::string cpuModelToString(SupportedCPUModels model) 
+{
+    std::map<SupportedCPUModels, std::string> cpuModelToString;
+    cpuModelToString[ICX] = "ICX";
+    cpuModelToString[SPR] = "SPR";
+    cpuModelToString[EMR] = "EMR";
+    cpuModelToString[GNR] = "GNR";
+    cpuModelToString[GNR_D] = "GNR_D";
+    cpuModelToString[GRR] = "GRR";
+    cpuModelToString[SRF] = "SRF";
+    cpuModelToString[UNSUPPORTED] = "UNSUPPORTED";
+
+    if (cpuModelToString.find(model) != cpuModelToString.end())
+    {
+        return cpuModelToString[model];
+    }
+    else
+    {
+        return "UNKNOWN";
+    }
+}
 
 
 bool match(const std::string& subtoken, const std::string& sname, std::string& result)

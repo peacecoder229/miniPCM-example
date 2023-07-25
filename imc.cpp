@@ -28,6 +28,8 @@ IMC::IMC()
     // TODO: change the hardcoded stuff
     //
      uint32 cpu_model = getCPUModel();
+     std::string model_name = cpuModelToString(static_cast<SupportedCPUModels>(cpu_model));
+     std::cout << "The model name is: " << model_name << std::endl;
         switch(cpu_model) {
             case SPR:  // SPR is an enum value, it's an integer constant
                 numChannels = 2;

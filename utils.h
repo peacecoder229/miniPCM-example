@@ -6,7 +6,7 @@
 #include <regex>
 #include <iostream>
 #include <unistd.h>
-
+#include <map>
 #include "types.h"
 
 namespace pcm
@@ -23,6 +23,9 @@ enum SupportedCPUModels
         SRF = 175,
         UNSUPPORTED = 5555
     };
+
+std::string cpuModelToString(SupportedCPUModels model); 
+
 std::vector<std::string> split(const std::string & str, const char delim);
 std::tuple<double, double, double> getMultipliersForModel(uint32 cpu_model);
 bool match(const std::string& subtoken, const std::string& sname, std::string& result);
