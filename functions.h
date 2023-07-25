@@ -54,7 +54,62 @@ inline void iioPost(pcm::IIO & iio, double n_sample_in_sec)
 }
 
 
+template <typename T>
+inline void post(T& obj, double n_sample_in_sec, std::map<std::string, std::pair<std::string, bool>>& Metrics )
+{
 
+if(obj.eventCount == 0) return;
+
+std::map<std::string, double> counterValues;
+static std::vector<std::vector<pcm::uint64>> counter0, prev0;
+static std::vector<std::vector<pcm::uint64>> counter1, prev1;
+static std::vector<std::vector<pcm::uint64>> counter2, prev2;
+static std::vector<std::vector<pcm::uint64>> counter3, prev3;
+
+if (prev0.empty()) {
+	obj.getCounter(prev0, 0);
+	obj.getCounter(prev1, 1);
+	obj.getCounter(prev2, 2);
+	obj.getCounter(prev3, 3);
+}
+
+obj.getCounter(counter0, 0);
+obj.getCounter(counter1, 1);
+obj.getCounter(counter2, 2);
+obj.getCounter(counter3, 3);
+
+for(int soc = 0; soc < pcm::sockets; soc++){
+
+	counterValues["c0"] = 0;
+	counterValues["c1"] = 0;
+	counterValues["c2"] = 0;
+	counterValues["c3"] = 0;
+
+	for(int i = 0; i < counter0[soc].size(); i++){
+	// Example usage
+	counterValues["c0"] += (counter0[soc][i] - prev0[soc][i]);
+	counterValues["c1"] += (counter1[soc][i] - prev1[soc][i]);
+	counterValues["c2"] += (counter2[soc][i] - prev2[soc][i]);
+	counterValues["c3"] += (counter3[soc][i] - prev3[soc][i]);
+	}
+
+for (const auto& pair : Metrics)
+{
+    std::cout << "socket" << soc << pair.first << " = " << pcm::calculate_metric(pair.second.first, counterValues, n_sample_in_sec, pair.second.second) << std::endl;
+}
+
+//std::for_each(counterValues.begin(), counterValues.end(), [](std::pair<const std::string, double>& p){ p.second = 0; });
+
+
+}
+
+    prev0 = counter0;
+    prev1 = counter1;
+    prev2 = counter2;
+    prev3 = counter3;
+
+
+}
 
 inline void chaPost(pcm::CHA& cha, double n_sample_in_sec, const std::string& analysis)
 {

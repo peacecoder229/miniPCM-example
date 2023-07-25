@@ -98,6 +98,47 @@ void print_usage(const string progname)
     cerr << "\n";
 }
 
+
+// Function to process -m command line argument
+
+void process_metric_argument(const std::string& arg, std::map<std::string, std::pair<std::string, bool>>& metrics)
+{
+    size_t equalPos = arg.find('=');
+    if (equalPos != std::string::npos)
+    {
+        std::string metricName = arg.substr(0, equalPos);
+        std::string formulaWithFlag = arg.substr(equalPos + 1);
+        size_t commaPos = formulaWithFlag.find(',');
+        std::string formula = formulaWithFlag.substr(0, commaPos);
+        bool multiplyFlag = formulaWithFlag.substr(commaPos + 1) == "true" ? true : false;
+        metrics[metricName] = {formula, multiplyFlag};
+    }
+    else
+    {
+        std::cerr << "Invalid -m argument format. Expected format: metric=formula,flag" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+/*
+void process_metric_argument(const std::string& arg, std::map<std::string, std::string>& metrics)
+{
+    size_t equalPos = arg.find('=');
+    if (equalPos != std::string::npos)
+    {
+        std::string metricName = arg.substr(0, equalPos);
+        std::string formula = arg.substr(equalPos + 1);
+        metrics[metricName] = formula;
+    }
+    else
+    {
+        std::cerr << "Invalid -m argument format. Expected format: metric=formula" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+*/
+
+
 bool addEvent(string eventStr, pcm::IMC& imc)
 {
 
@@ -163,6 +204,7 @@ int main(int argc, char* argv[])
     int iteration = 1;
     double dlymicro = -1;
     double actualmicro;
+    std::map<std::string, std::pair<std::string, bool>> metrics;
 
     if (argc > 1) do
     {
@@ -183,6 +225,13 @@ int main(int argc, char* argv[])
             iteration = atoi(*argv);
             cout << "Iteration = " << iteration << "\n";
         }
+	else if (strncmp(*argv, "-m", 2) == 0)
+	{
+	    argv++;
+	    argc--;
+	    process_metric_argument(*argv, metrics);
+	}
+
 
         else if (strncmp(*argv, "-e", 2) == 0)
         {
@@ -217,7 +266,11 @@ int main(int argc, char* argv[])
 
     std::cout.precision(4);
     std::cout << std::fixed;
-    
+    std::map<std::string, double> values;
+    //ToDo debug  why formula wokring fist time then next iterations it is not working.. Debugging test
+//	values["c0"] = 2.0;
+//	std::string test_formula = "c0*2";
+
 
     while (1){
         //::sleep(delay);
@@ -225,6 +278,8 @@ int main(int argc, char* argv[])
 	double tot_sample_in_sec = 1e6 / actualmicro;
 	std::cout << "Actual sleep duration: " << actualmicro << " microseconds and total samples in seconds is " << tot_sample_in_sec << "\n"  ;
 
+	//std::cout << "Test result: " << pcm::calculate_metric(test_formula, values, tot_sample_in_sec, false) << std::endl;
+	//values["c0"] += 2; 
         // imc.print();
         // cha.print();
         // iio.print();
@@ -233,6 +288,7 @@ int main(int argc, char* argv[])
         //chaPost(cha, tot_sample_in_sec, "latency");
 	imcPostnutanix(imc, tot_sample_in_sec);
         //imcPost(imc, tot_sample_in_sec);
+        //post(imc, tot_sample_in_sec, metrics);
       //  iioPost(iio, tot_sample_in_sec);
     }
 }

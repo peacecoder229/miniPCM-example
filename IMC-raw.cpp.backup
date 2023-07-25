@@ -98,7 +98,7 @@ void print_usage(const string progname)
     cerr << "\n";
 }
 
-bool addEvent(string eventStr, pcm::IMC& imc, pcm::CHA& cha, pcm::IIO& iio)
+bool addEvent(string eventStr, pcm::IMC& imc)
 {
 
     enum class pmuType {
@@ -133,12 +133,6 @@ bool addEvent(string eventStr, pcm::IMC& imc, pcm::CHA& cha, pcm::IIO& iio)
         case pmuType::IMC:
             imc.program(configStr);
             break;
-        case pmuType::CHA:
-            cha.program(configStr);
-            break;
-        case pmuType::IIO:
-            iio.program(configStr);
-            break;
         default:
             return false;
     }
@@ -152,10 +146,10 @@ int main(int argc, char* argv[])
 
     pcm::IMC imc;
     pcm::CHA cha;
-    pcm::IIO iio;
+    //pcm::IIO iio;
     global_imc_ptr = &imc;
-    global_cha_ptr = &cha;
-    global_iio_ptr = &iio;
+    //global_cha_ptr = &cha;
+    //global_iio_ptr = &iio;
 
     std::signal(SIGINT, signal_handler);
     std::signal(SIGTERM, signal_handler);
@@ -195,7 +189,7 @@ int main(int argc, char* argv[])
             argv++;
             argc--;
 
-            if (addEvent(*argv, imc, cha, iio) == false)
+            if (addEvent(*argv, imc) == false)
             {
                 exit(EXIT_FAILURE);
             }
@@ -216,8 +210,6 @@ int main(int argc, char* argv[])
     } while (argc > 1); // end of command line parsing loop
 
     imc.run();
-    cha.run();
-    iio.run();
 
     if (delay <= 0.0) delay = PCM_DELAY_DEFAULT;
 
@@ -239,7 +231,8 @@ int main(int argc, char* argv[])
         // iio.printFR();
         //chaPost(cha, tot_sample_in_sec, "iobw");
         //chaPost(cha, tot_sample_in_sec, "latency");
-        imcPost(imc, tot_sample_in_sec);
+	imcPostnutanix(imc, tot_sample_in_sec);
+        //imcPost(imc, tot_sample_in_sec);
       //  iioPost(iio, tot_sample_in_sec);
     }
 }

@@ -25,6 +25,7 @@ enum SupportedCPUModels
     };
 std::vector<std::string> split(const std::string & str, const char delim);
 std::tuple<double, double, double> getMultipliersForModel(uint32 cpu_model);
+double calculate_metric(const std::string& formula, std::map<std::string, double>& values, double n_sample_in_sec, bool multiplyFlag);
 bool match(const std::string& subtoken, const std::string& sname, std::string& result);
 class s_expect : public std::string
 {

@@ -1,7 +1,59 @@
 #include "utils.h"
+#include "exprtk.hpp"
 
 namespace pcm
 {
+
+
+void printMap(const std::map<std::string, double>& values)
+{
+    for (const auto& pair : values)
+    {
+        std::cout << "Key: " << pair.first << " Value: " << pair.second << std::endl;
+    }
+}
+
+
+
+double calculate_metric(const std::string& formula, std::map<std::string, double>& values, double n_sample_in_sec, bool multiplyFlag)
+{
+    exprtk::symbol_table<double> symbolTable;
+    printMap(values);
+
+    for (const auto& pair : values)
+    {
+	double nonConstCopy = pair.second;
+        symbolTable.add_variable(pair.first, nonConstCopy);
+    }
+
+    printf("tot_bw=%.2f memWR_lvl=%.2f memRD_lvl=%.2f ", ((values["c0"] * 64) / 1e9 ) * n_sample_in_sec  , (values["c2"] / values["c1"] / 126) , (values["c3"] / values["c1"] / 126));
+    exprtk::expression<double> expression;
+    expression.register_symbol_table(symbolTable);
+
+    exprtk::parser<double> parser;
+    if (!parser.compile(formula, expression))
+    {
+        std::cerr << "Failed to compile formula: " << formula << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    double result = expression.value();
+
+    // Print debugging information
+    std::cout << "Formula: " << formula << std::endl;
+    std::cout << "Initial expression value: " << expression.value() << std::endl;
+    std::cout << "Multiply flag: " << (multiplyFlag ? "true" : "false") << std::endl;
+    std::cout << "n_sample_in_sec: " << n_sample_in_sec << std::endl;
+// Apply n_sample_in_sec multiplication if flag is true
+    if (multiplyFlag) 
+    {
+        result *= n_sample_in_sec;
+    }
+std::cout << "Final result: " << result << std::endl;
+    return result;
+}
+
+
+
 
 std::vector<std::string> split(const std::string & str, const char delim)
 {
@@ -19,7 +71,7 @@ std::tuple<double, double, double> getMultipliersForModel(uint32 cpu_model) {
         switch (cpu_model) {
             case GNR:
             case SRF:
-                return std::make_tuple(2.0, 4.0, 4.0);
+                return std::make_tuple(2.0, 2.0, 2.0);
             default:
                 return std::make_tuple(1.0, 1.0, 1.0);
         }
