@@ -3,8 +3,10 @@ ifdef PCM_DEBUG
 DEBUGFLAGS=-DPCM_DEBUG
 endif
 
-all: utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o mem_mon_vm mem_mon
+all: utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o mem_mon_vm mem_mon IMC-raw
 
+IMC-raw: IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o
+	g++ IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o -o IMC-raw.x
 mem_mon_vm: IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o
 	g++ $(DEBUGFLAGS) IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o -static -o mem_mon_vm -lpthread
 
