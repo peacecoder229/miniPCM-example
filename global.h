@@ -23,8 +23,10 @@ constexpr auto PCM_INVALID_FUNC_ADDR              = ~(uint32)0UL;
 
 constexpr auto SERVER_MC_CH_PMON_REAL_BASE_ADDR   = 0x22800;
 constexpr auto SERVER_MC_CH_PMON_BASE_ALIGN_DELTA = 0x00800;
+//below for SPR
 //constexpr auto SERVER_MC_CH_PMON_BASE_ADDR        = SERVER_MC_CH_PMON_REAL_BASE_ADDR - SERVER_MC_CH_PMON_BASE_ALIGN_DELTA;
-constexpr auto SERVER_MC_CH_PMON_BASE_ADDR        = 0x024e000;
+//below for GNR and SRF
+//constexpr auto SERVER_MC_CH_PMON_BASE_ADDR        = 0x024e000;
 //0x024e800 as specified in GNR PCM code leads to illegal args why.. deducting 800 from it does not show the same issue.
 // but program is stuck
 //constexpr auto SERVER_MC_CH_PMON_STEP             = 0x8000; // It seems 3 channels were assigned and currently ch0 is mapped to ch0 and ch1 is mapped to ch2

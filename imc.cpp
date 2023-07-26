@@ -28,19 +28,22 @@ IMC::IMC()
     // TODO: change the hardcoded stuff
     //
      uint32 cpu_model = getCPUModel();
+     uint32_t SERVER_MC_CH_PMON_BASE_ADDR;
      std::string model_name = cpuModelToString(static_cast<SupportedCPUModels>(cpu_model));
      std::cout << "The model name is: " << model_name << std::endl;
         switch(cpu_model) {
             case SPR:  // SPR is an enum value, it's an integer constant
-                numChannels = 2;
+                numChannels = 3;
                 imcno = 4;
 		MC_CH_PMON_STEP = SPR_MC_CH_PMON_STEP;
+		SERVER_MC_CH_PMON_BASE_ADDR  = SERVER_MC_CH_PMON_REAL_BASE_ADDR - SERVER_MC_CH_PMON_BASE_ALIGN_DELTA;
                 break;
             case GNR:  // GNR is an enum value, it's an integer constant
             case SRF:  // SRF is an enum value, it's an integer constant
                 numChannels = 8;
                 imcno = 1;
 		MC_CH_PMON_STEP = SERVER_MC_CH_PMON_STEP;
+		SERVER_MC_CH_PMON_BASE_ADDR  = 0x024e000;
 		std::cout << "Model detected is GNR or SRF" << std::endl;
                 break;
             default:
