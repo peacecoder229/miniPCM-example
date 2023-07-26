@@ -1,11 +1,11 @@
-INCLUDE_PATH=/home/rdas/mini-pcm/exprtk
+#INCLUDE_PATH=/home/rdas/mini-pcm/exprtk
 all: utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o IMC-raw
 
 IMC-raw: IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o
-	g++ -I/home/rdas/mini-pcm/exprtk IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o -o IMC-raw.x 
+	g++ -I$(shell pwd)/exprtk IMC-raw.cpp utils.o pci.o mmio.o msr.o pmu.o imc.o cha.o iio.o -o IMC-raw.x 
 
 utils.o: utils.h utils.cpp global.h types.h
-	g++ -I$(INCLUDE_PATH) -c utils.cpp -o utils.o
+	g++ -I$(shell pwd)/exprtk -c utils.cpp -o utils.o
 
 pci.o: pci.h pci.cpp global.h types.h
 	g++ -c pci.cpp -o pci.o

@@ -23,6 +23,7 @@ enum SupportedCPUModels
         SRF = 175,
         UNSUPPORTED = 5555
     };
+std::string cpuModelToString(SupportedCPUModels model);
 std::vector<std::string> split(const std::string & str, const char delim);
 std::tuple<double, double, double> getMultipliersForModel(uint32 cpu_model);
 double calculate_metric(const std::string& formula, std::map<std::string, double>& values, double n_sample_in_sec, bool multiplyFlag);
