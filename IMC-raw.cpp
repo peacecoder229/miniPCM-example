@@ -268,8 +268,11 @@ int main(int argc, char* argv[])
     std::cout << std::fixed;
     std::map<std::string, double> values;
     //ToDo debug  why formula wokring fist time then next iterations it is not working.. Debugging test
-//	values["c0"] = 2.0;
-//	std::string test_formula = "c0*2";
+	values["c0"] = 20;
+	values["c2"] = 5;
+	values["c1"] = 0;
+	values["c3"] = 0;
+	std::string test_formula = "c0*2*c2";
 
 
     while (1){
@@ -279,16 +282,16 @@ int main(int argc, char* argv[])
 	std::cout << "Actual sleep duration: " << actualmicro << " microseconds and total samples in seconds is " << tot_sample_in_sec << "\n"  ;
 
 	//std::cout << "Test result: " << pcm::calculate_metric(test_formula, values, tot_sample_in_sec, false) << std::endl;
-	//values["c0"] += 2; 
+	values["c0"] += 2; 
         // imc.print();
         // cha.print();
         // iio.print();
         // iio.printFR();
         //chaPost(cha, tot_sample_in_sec, "iobw");
         //chaPost(cha, tot_sample_in_sec, "latency");
-	imcPostnutanix(imc, tot_sample_in_sec);
+	//imcPostnutanix(imc, tot_sample_in_sec);
         //imcPost(imc, tot_sample_in_sec);
-        //post(imc, tot_sample_in_sec, metrics);
+        post(imc, tot_sample_in_sec, metrics);
       //  iioPost(iio, tot_sample_in_sec);
     }
 }
