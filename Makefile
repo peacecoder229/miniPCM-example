@@ -68,3 +68,5 @@ cha-lat:
 
 imc_ntnx:
 	./IMC-raw.x -e imc/config=0x000000000000ff05,name=UNC_M_CAS_COUNT.ALL -e imc/config=0x0000000000000101,name=UNC_M_CLOCKTICKS  -e imc/config=0x0000000000000084,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0 -d 1
+spr_cmdformula:
+	./IMC-raw.x -e imc/config=0x000000000000ff05,name=UNC_M_CAS_COUNT.ALL -e imc/config=0x0000000000000101,name=UNC_M_CLOCKTICKS -e imc/config=0x0000000000000082,name=UNC_M_WPQ_OCCUPANCY_PCH0 -e imc/config=0x0000000000000080,name=UNC_M_RPQ_OCCUPANCY_PCH0 -m sysBW='((c0 * 64) / 1e9),true'  -m WPQ='(c2/(c1/8))' -d 5

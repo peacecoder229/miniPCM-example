@@ -26,7 +26,7 @@ double calculate_metric(const std::string& formula, std::map<std::string, double
         symbolTable.add_variable(pair.first, pair.second);
     }
 
-    printf("tot_bw=%.2f memWR_lvl=%.2f memRD_lvl=%.2f ", ((values["c0"] * 64) / 1e9 ) * n_sample_in_sec  , (values["c2"] / (values["c1"]/8) / 126) , (values["c3"] / (values["c1"]/8) / 126));
+    //printf("tot_bw=%.2f memWR_lvl=%.2f memRD_lvl=%.2f ", ((values["c0"] * 64) / 1e9 ) * n_sample_in_sec  , (values["c2"] / (values["c1"]/8) / 126) , (values["c3"] / (values["c1"]/8) / 126));
     exprtk::expression<double> expression;
     expression.register_symbol_table(symbolTable);
 

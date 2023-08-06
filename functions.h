@@ -95,13 +95,15 @@ for(int soc = 0; soc < pcm::sockets; soc++){
 
 for (const auto& pair : Metrics)
 {
-    std::cout << "socket" << soc << pair.first << " = " << pcm::calculate_metric(pair.second.first, counterValues, n_sample_in_sec, pair.second.second) << std::endl;
+    std::cout << "socket" << soc << pair.first << " = " << pcm::calculate_metric(pair.second.first, counterValues, n_sample_in_sec, pair.second.second) << "|||";
 }
 
 //std::for_each(counterValues.begin(), counterValues.end(), [](std::pair<const std::string, double>& p){ p.second = 0; });
 
 
 }
+
+std::cout << "\n";
 
     prev0 = counter0;
     prev1 = counter1;
@@ -293,6 +295,8 @@ inline void imcPostnutanix(pcm::IMC& imc, double n_sample_in_sec)
 		tbw *= tbw_multiplier;
         	wpq *= wpq_multiplier;
         	rpq *= rpq_multiplier;
+
+		printf("cycle-count = %.2f\n", ncyc);
 
                 printf("tot_bw=%.2f memWR_lvl=%.2f memRD_lvl=%.2f ", tbw, (wpq / ncyc / 126) , (rpq / ncyc / 126));
 

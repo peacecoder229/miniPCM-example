@@ -104,13 +104,14 @@ void print_usage(const string progname)
 void process_metric_argument(const std::string& arg, std::map<std::string, std::pair<std::string, bool>>& metrics)
 {
     size_t equalPos = arg.find('=');
+    bool multiplyFlag = false;
     if (equalPos != std::string::npos)
     {
         std::string metricName = arg.substr(0, equalPos);
         std::string formulaWithFlag = arg.substr(equalPos + 1);
         size_t commaPos = formulaWithFlag.find(',');
         std::string formula = formulaWithFlag.substr(0, commaPos);
-        bool multiplyFlag = formulaWithFlag.substr(commaPos + 1) == "true" ? true : false;
+        multiplyFlag = formulaWithFlag.substr(commaPos + 1) == "true" ? true : false;
         metrics[metricName] = {formula, multiplyFlag};
     }
     else
