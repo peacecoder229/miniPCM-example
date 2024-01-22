@@ -19,4 +19,7 @@ make run
 * config value for any other IMC counter could be obtained with emon
 ```
 emon --dry-run -t1 -l10 -C "UNC_M_CAS_COUNT.WR" -m
+
+compiling with static libs
+yum install  libstdc++-static  glibc-static
 ```

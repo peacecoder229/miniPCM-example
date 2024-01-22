@@ -42,7 +42,7 @@ pcm::CHA* global_cha_ptr = nullptr;
 pcm::IIO* global_iio_ptr = nullptr;
 
 double calibratedMicroSeconds(unsigned long delay_micros){
-	//std::cout << "Sleeping for " << delay_micros << " micro seconds \n";
+	std::cout << "Sleeping for " << delay_micros << " micro seconds \n";
 	auto start_time = std::chrono::high_resolution_clock::now();
 	std::this_thread::sleep_for(std::chrono::microseconds(delay_micros));
 	auto end_time = std::chrono::high_resolution_clock::now();
@@ -232,7 +232,10 @@ int main(int argc, char* argv[])
     cha.run();
     iio.run();
 
-    if (delay <= 0.0) delay = PCM_DELAY_DEFAULT;
+    if (delay <= 0.0) {
+	    delay = PCM_DELAY_DEFAULT;
+	    dlymicro = delay * 1000000;
+    }
 
     cerr << "Update every " << delay << " seconds\n";
 
